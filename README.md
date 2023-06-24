@@ -1,8 +1,2 @@
-## Includes
 
-- React
-- TypeScript
-- Cypress
-- StoryBook
-- CI
-- Eslint & Prettier
+[demo](https://bitterteasweetorange.github.io/mui-easy-table/?path=/story/easytable--defalut)
