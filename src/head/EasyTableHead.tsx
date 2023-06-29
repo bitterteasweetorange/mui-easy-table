@@ -2,8 +2,8 @@ import { Box, Checkbox } from '@mui/material'
 import { useState } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { UseIOReturn } from 'react-utils-ts'
-import { EasyCell } from '../component/EasyCell'
 import { EasyColumnProps } from '../EasyTable'
+import { EasyCell } from '../component/EasyCell'
 import { EasyTableHeadItem, headHeight } from './EasyTableHeadItem'
 
 export type EasyTableHeadSortProps<T extends FieldValues> = {
@@ -11,7 +11,9 @@ export type EasyTableHeadSortProps<T extends FieldValues> = {
   direction: 'asc' | 'desc'
 } | null
 
-export type EasyTableHeadWidthProps<T extends FieldValues> = Partial<Record<Path<T>, number>>
+export type EasyTableHeadWidthProps<T extends FieldValues> = Partial<
+  Record<Path<T>, number>
+>
 
 export type EasyTableHeadProps<T extends FieldValues> = {
   columns: EasyColumnProps<T>[]
@@ -36,7 +38,9 @@ export type EasyTableHeadProps<T extends FieldValues> = {
 }
 
 export const defaultWidth = 100
-export function EasyTableHead<T extends FieldValues>(props: EasyTableHeadProps<T>) {
+export function EasyTableHead<T extends FieldValues>(
+  props: EasyTableHeadProps<T>,
+) {
   const { indeterminate, widthIO, setting, columns, sortIO, checkedIO } = props
   const [hover, setHover] = useState(false)
   return (
@@ -86,7 +90,10 @@ export function EasyTableHead<T extends FieldValues>(props: EasyTableHeadProps<T
             sortIO={
               sortable
                 ? {
-                    value: sortIO?.value?.path === path ? sortIO.value?.direction : 'none',
+                    value:
+                      sortIO?.value?.path === path
+                        ? sortIO.value?.direction
+                        : 'none',
                     onChange: (nextSort) => {
                       if (nextSort === 'none') {
                         sortIO?.onChange(null)
