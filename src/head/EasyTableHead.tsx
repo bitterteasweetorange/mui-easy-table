@@ -12,7 +12,7 @@ export type EasyTableHeadSortProps<T extends FieldValues> = {
 } | null
 
 export type EasyTableHeadWidthProps<T extends FieldValues> = Partial<
-  Record<Path<T>, number>
+  Record<Path<T> | 'actions', number>
 >
 
 export type EasyTableHeadProps<T extends FieldValues> = {

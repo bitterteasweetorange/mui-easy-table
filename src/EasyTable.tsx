@@ -66,7 +66,12 @@ export type EasyTableCellRender<T> =
   /**
    * index: row index
    */
-  | ((val: any, row: T, index: number) => ReactNode)
+  | ((
+      val: any,
+      row: T,
+      index: number,
+      useTableReturn: UseTableReturn<T>,
+    ) => ReactNode)
 export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
   const { isRowEqual, height, columns, selectionMode, useTableReturn } = props
   const { rowKeyPath, selected, data, getRowDisabled, checkAll, handleSelect } =
@@ -83,9 +88,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
   const widthIO = useIO<EasyTableHeadWidthProps<T>>(() => {
     const res: EasyTableHeadWidthProps<T> = {}
     columns.forEach((x) => {
-      if (x.path !== 'actions') {
-        res[x.path] = x.width || defaultWidth
-      }
+      res[x.path] = x.width || defaultWidth
     })
     return res
   })
@@ -186,7 +189,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
                     height={LINE_HEIGHT}
                   >
                     {render
-                      ? renderCell(index, value, render, row)
+                      ? renderCell(index, value, render, row, useTableReturn)
                       : value === null
                       ? ''
                       : String(value)}
@@ -244,21 +247,28 @@ function sumColumnValue<T>(data: T[], path: Path<T> | 'actions') {
 
 function renderCell<T>(
   index: number,
-  val: any,
+  val: unknown,
   render: EasyTableCellRender<T>,
   row: T,
+  useTableReturn: UseTableReturn<T>,
 ) {
   if (typeof render === 'function') {
-    return render(val, row, index)
+    return render(val, row, index, useTableReturn)
   }
   if (render === 'money') {
     return Number(val).toLocaleString()
   }
   if (render === 'yyyy-MM-dd') {
-    return format(val, 'yyyy-MM-dd')
+    if (typeof val === 'number') {
+      return format(val, 'yyyy-MM-dd')
+    }
+    return null
   }
   if (render === 'yyyy-MM-dd HH:mm:ss') {
-    return format(val, 'yyyy-MM-dd HH:mm:ss')
+    if (typeof val === 'number') {
+      return format(val, 'yyyy-MM-dd HH:mm:ss')
+    }
+    return null
   }
   return ''
 }

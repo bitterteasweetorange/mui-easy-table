@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker'
-import { DeleteForeverOutlined, UpdateOutlined } from '@mui/icons-material'
-import { IconButton } from '@mui/material'
-import { useContext } from 'react'
+import { LoadingButton } from '@mui/lab'
+import { Tooltip } from '@mui/material'
+import React from 'react'
 import { EasyColumnProps } from '../EasyTable'
-import { EasyTableContext } from '../Provider'
+import { UseTableReturn } from '../useTable'
 
 export type MockShape = {
   id: number
@@ -64,44 +64,85 @@ export const columns: EasyColumnProps<MockShape>[] = [
   },
   {
     path: 'actions',
+    width: 250,
     headerName: 'Actions',
-    render: (_, row, index) => (
+    align: 'right',
+    render: (_, row, index, useTableReturn) => (
       <>
-        <UpdateRow row={row} index={index} />
-        <DeleteRow index={index} />
+        <UpdateRow
+          updateRecord={useTableReturn.handleData.update}
+          row={row}
+          index={index}
+        />
+        <DeleteRow
+          deleteRecord={useTableReturn.handleData.delete}
+          index={index}
+        />
       </>
     ),
   },
 ]
 
-function UpdateRow({ index, row }: { row: MockShape; index: number }) {
-  const useTableReturn = useContext(EasyTableContext)
-
+function UpdateRow({
+  index,
+  row,
+  updateRecord,
+}: {
+  updateRecord: UseTableReturn<MockShape>['handleData']['update']
+  row: MockShape
+  index: number
+}) {
+  const [loading, setLoading] = React.useState(false)
   return (
-    <IconButton
+    <LoadingButton
+      loading={loading}
       color="success"
-      onClick={(e) => {
+      onClick={async (e) => {
         e.stopPropagation()
-        useTableReturn.handleData.update(index, { ...row, age: Date.now() })
+        setLoading(true)
+        await sleep(1000)
+        setLoading(false)
+        updateRecord(index, {
+          ...row,
+          name: {
+            firstName: 'Momo',
+            lastName: row.name.lastName,
+          },
+        })
       }}
     >
-      <UpdateOutlined />
-    </IconButton>
+      update
+    </LoadingButton>
   )
 }
 
-function DeleteRow({ index }: { index: number }) {
-  const useTableReturn = useContext(EasyTableContext)
-
+function DeleteRow({
+  index,
+  deleteRecord,
+}: {
+  deleteRecord: UseTableReturn<MockShape>['handleData']['delete']
+  index: number
+}) {
+  const [loading, setLoading] = React.useState(false)
   return (
-    <IconButton
-      color="error"
-      onClick={(e) => {
-        e.stopPropagation()
-        useTableReturn.handleData.delete(index)
-      }}
-    >
-      <DeleteForeverOutlined />
-    </IconButton>
+    <Tooltip title="delete this record">
+      <LoadingButton
+        loading={loading}
+        color="warning"
+        onClick={async (e) => {
+          e.stopPropagation()
+          setLoading(true)
+          await sleep(1000)
+          setLoading(false)
+          deleteRecord(index)
+        }}
+      >
+        delete
+      </LoadingButton>
+    </Tooltip>
   )
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
