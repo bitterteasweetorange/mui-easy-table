@@ -20,6 +20,23 @@ export const Defalut = () => {
     rowKeyPath: 'id',
   })
 
+  return (
+    <EasyTable<MockShape>
+      height="calc(100vh - 34px)"
+      selectionMode="multiple"
+      useTableReturn={useTableReturn}
+      columns={columns}
+    />
+  )
+}
+
+export const Operation = () => {
+  const io = useIO(mockData)
+  const useTableReturn = useTable<MockShape, Record<string, any>>({
+    rawData: io.value,
+    rowKeyPath: 'id',
+  })
+
   const { selected, handleData, data } = useTableReturn
   const { add: addRow, delete: deleteRow, update: updateRow } = handleData
 
@@ -37,7 +54,6 @@ export const Defalut = () => {
           io.onChange([
             {
               id: 100000,
-              age: 20,
               money: 10000,
               name: {
                 lastName: 'Doe',
@@ -53,7 +69,6 @@ export const Defalut = () => {
         onClick={() => {
           addRow({
             id: Date.now(),
-            age: 20,
             money: 10000,
             name: {
               firstName: 'John',
@@ -75,7 +90,7 @@ export const Defalut = () => {
         onClick={() => {
           const first = data?.[0]
           if (first) {
-            updateRow(0, { ...first, age: 100 })
+            updateRow(0, { ...first })
           }
         }}
       >
@@ -83,8 +98,8 @@ export const Defalut = () => {
       </Button>
       <EasyTableProvider value={useTableReturn}>
         <EasyTable<MockShape>
-          height='300px'
-          selectionMode='multiple'
+          height="300px"
+          selectionMode="multiple"
           useTableReturn={useTableReturn}
           columns={columns}
         />
@@ -104,9 +119,13 @@ export const MultipleSelect = () => {
   return (
     <>
       <EasyTableProvider value={useTableReturn}>
-        <EasyTable<MockShape> useTableReturn={useTableReturn} columns={columns} selectionMode='multiple' />
+        <EasyTable<MockShape>
+          useTableReturn={useTableReturn}
+          columns={columns}
+          selectionMode="multiple"
+        />
       </EasyTableProvider>
-      <Button variant='text'>{selected.length} rows selected</Button>
+      <Button variant="text">{selected.length} rows selected</Button>
     </>
   )
 }
@@ -115,7 +134,8 @@ export const Disabled = () => {
   const useTableReturn = useTable<MockShape, Record<string, any>>({
     rawData: mockData,
     defaultSelected: [mockData[0], mockData[2]],
-    getRowDisabled: (row) => row.id === 2 || row.name.firstName === 'Melisandre',
+    getRowDisabled: (row) =>
+      row.id === 2 || row.name.firstName === 'Melisandre',
     rowKeyPath: 'id',
   })
 
@@ -123,7 +143,11 @@ export const Disabled = () => {
   return (
     <>
       <EasyTableProvider value={useTableReturn}>
-        <EasyTable<MockShape> useTableReturn={useTableReturn} columns={columns} selectionMode='multiple' />
+        <EasyTable<MockShape>
+          useTableReturn={useTableReturn}
+          columns={columns}
+          selectionMode="multiple"
+        />
       </EasyTableProvider>
       <Button>{selected.length} selected</Button>
     </>
@@ -141,7 +165,11 @@ export const SingleSelected = () => {
   return (
     <>
       <EasyTableProvider value={useTableReturn}>
-        <EasyTable<MockShape> useTableReturn={useTableReturn} columns={columns} selectionMode='single' />
+        <EasyTable<MockShape>
+          useTableReturn={useTableReturn}
+          columns={columns}
+          selectionMode="single"
+        />
       </EasyTableProvider>
       <Typography>selected: {selected?.[0]?.name.lastName}</Typography>
     </>
