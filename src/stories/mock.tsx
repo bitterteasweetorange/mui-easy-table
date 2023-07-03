@@ -1,4 +1,5 @@
-import { faker } from '@faker-js/faker'
+import { Sex, faker } from '@faker-js/faker'
+import { FemaleOutlined, MaleOutlined } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
 import { Tooltip } from '@mui/material'
 import React from 'react'
@@ -12,6 +13,7 @@ export type MockShape = {
     firstName: string | null
   }
   money: number | null
+  gender: 'female' | 'male'
 }
 
 export const mockData: MockShape[] = new Array(100)
@@ -28,6 +30,7 @@ export const mockData: MockShape[] = new Array(100)
         min: 1000,
         max: 20000,
       }),
+      gender: faker.person.sexType(),
     }
   })
 
@@ -46,6 +49,18 @@ export const columns: EasyColumnProps<MockShape>[] = [
     path: 'name.lastName',
     width: 200,
     headerName: 'LastName',
+  },
+  {
+    path: 'gender',
+    width: 80,
+    headerName: 'Gender',
+    render: (val: Sex) => {
+      return val === 'female' ? (
+        <FemaleOutlined color="success" />
+      ) : (
+        <MaleOutlined color="warning" />
+      )
+    },
   },
   {
     path: 'name',
