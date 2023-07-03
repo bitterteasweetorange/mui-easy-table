@@ -38,11 +38,9 @@ export const columns: EasyColumnProps<MockShape>[] = [
     width: 150,
   },
   {
-    path: 'name',
-    width: 300,
-    headerName: 'Name',
-    render: (value: MockShape['name']) =>
-      (value.firstName || '') + ' ' + value.lastName,
+    path: 'name.firstName',
+    width: 200,
+    headerName: 'FirstName',
   },
   {
     path: 'name.lastName',
@@ -50,9 +48,11 @@ export const columns: EasyColumnProps<MockShape>[] = [
     headerName: 'LastName',
   },
   {
-    path: 'name.firstName',
-    width: 200,
-    headerName: 'FirstName',
+    path: 'name',
+    width: 500,
+    headerName: 'Name',
+    render: (value: MockShape['name']) =>
+      (value.firstName || '') + ' ' + value.lastName,
   },
   {
     path: 'money',

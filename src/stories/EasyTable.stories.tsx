@@ -1,4 +1,3 @@
-import { Button } from '@mui/material'
 import type { Meta } from '@storybook/react'
 import { EasyTable } from '../EasyTable'
 import { useTable } from '../useTable'
@@ -22,16 +21,10 @@ export const Defalut = () => {
   const { selected } = useTableReturn
   return (
     <>
-      <Button
-        variant="outlined"
-        onClick={() => {
-          alert(JSON.stringify(selected))
-        }}
-      >
-        {selected.length} selected
-      </Button>
+      {selected.length} selected:
+      {selected.map((user) => user.name.firstName).join(', ')}
       <EasyTable<MockShape>
-        height={`calc(100vh - ${34 + 37}px)`}
+        height={`calc(100vh - 120px)`}
         selectionMode="multiple"
         useTableReturn={useTableReturn}
         columns={columns}

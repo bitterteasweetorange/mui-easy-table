@@ -107,6 +107,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
         height,
         display: 'grid',
         gridTemplateRows: 'auto 1fr auto',
+        overflowX: 'auto',
       }}
     >
       <EasyTableHead
