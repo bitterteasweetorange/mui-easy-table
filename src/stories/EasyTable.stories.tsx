@@ -24,6 +24,7 @@ export const Defalut = () => {
       {selected.length} selected:
       {selected.map((user) => user.name.firstName).join(', ')}
       <EasyTable<MockShape>
+        setting
         height={`calc(100vh - 120px)`}
         selectionMode="multiple"
         useTableReturn={useTableReturn}

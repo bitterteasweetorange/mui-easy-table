@@ -34,6 +34,11 @@ export type EasyTableProps<T extends FieldValues> = {
    * performs a deep comparison between two values to determine if they are equivalent.
    * */
   isRowEqual?: (a: T, b: T) => boolean
+  /**
+   * @default false
+   * setting of columns
+   * */
+  setting?: boolean
 }
 export type EasyColumnProps<T extends FieldValues> = {
   path: Path<T> | 'actions'
@@ -73,7 +78,14 @@ export type EasyTableCellRender<T> =
       useTableReturn: UseTableReturn<T>,
     ) => ReactNode)
 export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
-  const { isRowEqual, height, columns, selectionMode, useTableReturn } = props
+  const {
+    setting,
+    isRowEqual,
+    height,
+    columns,
+    selectionMode,
+    useTableReturn,
+  } = props
   const { rowKeyPath, selected, data, getRowDisabled, checkAll, handleSelect } =
     useTableReturn
 
@@ -99,6 +111,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
     return sortData([...data], sortIO.value)
   }, [sortIO.value, data])
 
+  const hideListIO = useIO<(Path<T> | 'actions')[]>([])
   return (
     <Box
       sx={{
@@ -111,6 +124,8 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
       }}
     >
       <EasyTableHead
+        setting={setting}
+        hideListIO={hideListIO}
         sortIO={sortIO}
         widthIO={widthIO}
         columns={columns}
@@ -180,23 +195,25 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
                   />
                 </EasyCell>
               )}
-              {columns.map(({ render, path, align }) => {
-                const value = get(row, path)
-                return (
-                  <EasyCell
-                    align={align}
-                    key={path}
-                    width={widthIO.value?.[path] || defaultWidth}
-                    height={LINE_HEIGHT}
-                  >
-                    {render
-                      ? renderCell(index, value, render, row, useTableReturn)
-                      : value === null
-                      ? ''
-                      : String(value)}
-                  </EasyCell>
-                )
-              })}
+              {columns
+                .filter((col) => !hideListIO.value.includes(col.path))
+                .map(({ render, path, align }) => {
+                  const value = get(row, path)
+                  return (
+                    <EasyCell
+                      align={align}
+                      key={path}
+                      width={widthIO.value?.[path] || defaultWidth}
+                      height={LINE_HEIGHT}
+                    >
+                      {render
+                        ? renderCell(index, value, render, row, useTableReturn)
+                        : value === null
+                        ? ''
+                        : String(value)}
+                    </EasyCell>
+                  )
+                })}
             </EasyRow>
           )
         })}

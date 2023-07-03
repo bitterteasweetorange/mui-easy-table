@@ -23,12 +23,18 @@ export interface EasyTableHeadItemProps extends BoxProps {
   sortIO?: UseIOReturn<EasyTableHeadItemSort>
   showSettingIcon?: boolean
   showResizeIcon?: boolean
+  onHideColumn: () => void
 }
 
 export type EasyTableHeadItemSort = 'asc' | 'desc' | 'none'
 
 export const headHeight = 56
-export function EasyTableHeadItem({ showResizeIcon, width, onWidthChange, ...props }: EasyTableHeadItemProps) {
+export function EasyTableHeadItem({
+  showResizeIcon,
+  width,
+  onWidthChange,
+  ...props
+}: EasyTableHeadItemProps) {
   const { palette } = useTheme()
   return onWidthChange ? (
     <ResizableBox
@@ -78,7 +84,15 @@ export function EasyTableHeadItem({ showResizeIcon, width, onWidthChange, ...pro
 }
 
 function Content(props: EasyTableHeadItemProps) {
-  const { showSettingIcon, width, sortIO, headerName, align = 'left', ...restProps } = props
+  const {
+    showSettingIcon,
+    width,
+    sortIO,
+    headerName,
+    align = 'left',
+    onHideColumn,
+    ...restProps
+  } = props
   return (
     <EasyCell
       {...restProps}
@@ -90,7 +104,8 @@ function Content(props: EasyTableHeadItemProps) {
         position: 'relative',
         fontWeight: 'bold',
         alignItems: 'center',
-        justifyContent: align === 'left' ? 'start' : align === 'right' ? 'end' : 'center',
+        justifyContent:
+          align === 'left' ? 'start' : align === 'right' ? 'end' : 'center',
         '&:hover': {
           '& button': {
             visibility: 'visible',
@@ -120,23 +135,29 @@ function Content(props: EasyTableHeadItemProps) {
                 onChange?.('none')
             }
           }}
-          size='small'
+          size="small"
         >
           {sortIO.value === 'none' && (
             <ArrowUpwardIcon
               sx={{
                 visibility: 'hidden',
               }}
-              fontSize='small'
-              color='disabled'
+              fontSize="small"
+              color="disabled"
             />
           )}
-          {sortIO.value === 'asc' && <ArrowUpwardIcon fontSize='small' color='primary' />}
-          {sortIO.value === 'desc' && <ArrowDownwardIcon fontSize='small' color='primary' />}
+          {sortIO.value === 'asc' && (
+            <ArrowUpwardIcon fontSize="small" color="primary" />
+          )}
+          {sortIO.value === 'desc' && (
+            <ArrowDownwardIcon fontSize="small" color="primary" />
+          )}
         </IconButton>
       )}
       {showSettingIcon && (
         <EasyTableHeadItemSetting
+          onHideColumn={onHideColumn}
+          onManageColumns={() => {}}
           sx={{
             visibility: 'hidden',
           }}

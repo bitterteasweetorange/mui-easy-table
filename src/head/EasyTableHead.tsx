@@ -35,13 +35,25 @@ export type EasyTableHeadProps<T extends FieldValues> = {
    * if true, setting button will be shown,
    * */
   setting?: boolean
+  /**
+   * if passed, the column will be hidden
+   * */
+  hideListIO?: UseIOReturn<(Path<T> | 'actions')[]>
 }
 
 export const defaultWidth = 100
 export function EasyTableHead<T extends FieldValues>(
   props: EasyTableHeadProps<T>,
 ) {
-  const { indeterminate, widthIO, setting, columns, sortIO, checkedIO } = props
+  const {
+    hideListIO,
+    indeterminate,
+    widthIO,
+    setting,
+    columns,
+    sortIO,
+    checkedIO,
+  } = props
   const [hover, setHover] = useState(false)
   return (
     <>
@@ -74,42 +86,47 @@ export function EasyTableHead<T extends FieldValues>(
             />
           </EasyCell>
         )}
-        {columns.map(({ sortable, headerName, path, align }) => (
-          <EasyTableHeadItem
-            key={path}
-            headerName={headerName}
-            align={align}
-            showResizeIcon={hover}
-            width={widthIO?.value?.[path] || defaultWidth}
-            onWidthChange={(nextWidth) => {
-              widthIO?.onChange((pre) => ({
-                ...pre,
-                [path]: nextWidth,
-              }))
-            }}
-            sortIO={
-              sortable
-                ? {
-                    value:
-                      sortIO?.value?.path === path
-                        ? sortIO.value?.direction
-                        : 'none',
-                    onChange: (nextSort) => {
-                      if (nextSort === 'none') {
-                        sortIO?.onChange(null)
-                      } else if (path !== 'actions') {
-                        sortIO?.onChange({
-                          path,
-                          direction: nextSort as any,
-                        })
-                      }
-                    },
-                  }
-                : undefined
-            }
-            showSettingIcon={setting}
-          ></EasyTableHeadItem>
-        ))}
+        {columns
+          .filter((col) => !hideListIO?.value.includes(col.path))
+          .map(({ sortable, headerName, path, align }) => (
+            <EasyTableHeadItem
+              key={path}
+              headerName={headerName}
+              align={align}
+              showResizeIcon={hover}
+              width={widthIO?.value?.[path] || defaultWidth}
+              onWidthChange={(nextWidth) => {
+                widthIO?.onChange((pre) => ({
+                  ...pre,
+                  [path]: nextWidth,
+                }))
+              }}
+              sortIO={
+                sortable
+                  ? {
+                      value:
+                        sortIO?.value?.path === path
+                          ? sortIO.value?.direction
+                          : 'none',
+                      onChange: (nextSort) => {
+                        if (nextSort === 'none') {
+                          sortIO?.onChange(null)
+                        } else if (path !== 'actions') {
+                          sortIO?.onChange({
+                            path,
+                            direction: nextSort as any,
+                          })
+                        }
+                      },
+                    }
+                  : undefined
+              }
+              showSettingIcon={setting}
+              onHideColumn={() => {
+                hideListIO?.onChange((pre) => [...pre, path])
+              }}
+            ></EasyTableHeadItem>
+          ))}
       </Box>
     </>
   )

@@ -12,7 +12,10 @@ export function EasyPopper({
   openIO: UseIOReturn<boolean>
 }) {
   const handleClose = (event: Event | React.SyntheticEvent) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
       return
     }
 
@@ -20,16 +23,27 @@ export function EasyPopper({
   }
 
   return (
-    <Popper open={openIO.value} anchorEl={anchorRef.current} transition disablePortal>
+    <Popper
+      sx={{
+        zIndex: 1000,
+      }}
+      open={openIO.value}
+      anchorEl={anchorRef.current}
+      transition
+      disablePortal
+    >
       {({ TransitionProps, placement }) => (
         <Grow
           {...TransitionProps}
           style={{
-            transformOrigin: placement === 'bottom-start' ? 'left top' : 'left bottom',
+            transformOrigin:
+              placement === 'bottom-start' ? 'left top' : 'left bottom',
           }}
         >
           <Paper>
-            <ClickAwayListener onClickAway={handleClose}>{children}</ClickAwayListener>
+            <ClickAwayListener onClickAway={handleClose}>
+              {children}
+            </ClickAwayListener>
           </Paper>
         </Grow>
       )}

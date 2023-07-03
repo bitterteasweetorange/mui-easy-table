@@ -1,6 +1,11 @@
 import { Meta } from '@storybook/react'
+import { Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
-import { EasyTableHead, EasyTableHeadSortProps, EasyTableHeadWidthProps } from '../../head/EasyTableHead'
+import {
+  EasyTableHead,
+  EasyTableHeadSortProps,
+  EasyTableHeadWidthProps,
+} from '../../head/EasyTableHead'
 
 const meta = {
   title: 'head/EasyTableHead',
@@ -27,9 +32,11 @@ export const Template = () => {
   })
 
   const checkedIO = useIO<boolean>(false)
+  const hideListIO = useIO<(Path<Shape> | 'actions')[]>([])
 
   return (
     <EasyTableHead<Shape>
+      hideListIO={hideListIO}
       setting
       columns={[
         {
