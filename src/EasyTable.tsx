@@ -1,12 +1,17 @@
 import { Box, Checkbox } from '@mui/material'
 import { format } from 'date-fns'
-import { get, isEqual } from 'lodash'
+import { get } from 'lodash'
 import { ReactNode, useMemo } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { UseIOReturn, useIO } from 'react-utils-ts'
 import { EasyCell } from './component/EasyCell'
 import { EasyRow } from './component/EasyRow'
-import { EasyTableHead, EasyTableHeadSortProps, EasyTableHeadWidthProps, defaultWidth } from './head/EasyTableHead'
+import {
+  EasyTableHead,
+  EasyTableHeadSortProps,
+  EasyTableHeadWidthProps,
+  defaultWidth,
+} from './head/EasyTableHead'
 import { sortData } from './helper/sort'
 import { UseTableReturn } from './useTable'
 
@@ -25,6 +30,10 @@ export type EasyTableProps<T extends FieldValues> = {
    * @default undefined
    * */
   height?: string | number
+  /**
+   * performs a deep comparison between two values to determine if they are equivalent.
+   * */
+  isRowEqual?: (a: T, b: T) => boolean
 }
 export type EasyColumnProps<T extends FieldValues> = {
   path: Path<T> | 'actions'
@@ -59,8 +68,9 @@ export type EasyTableCellRender<T> =
    */
   | ((val: any, row: T, index: number) => ReactNode)
 export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
-  const { height, columns, selectionMode, useTableReturn } = props
-  const { rowKeyPath, selected, data, getRowDisabled, checkAll, handleSelect } = useTableReturn
+  const { isRowEqual, height, columns, selectionMode, useTableReturn } = props
+  const { rowKeyPath, selected, data, getRowDisabled, checkAll, handleSelect } =
+    useTableReturn
 
   const {
     delete: deleteSelected,
@@ -82,7 +92,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
 
   const sortIO = useIO<EasyTableHeadSortProps<T>>(null)
 
-  const visiableData = useMemo(() => {
+  const visiableData: T[] = useMemo(() => {
     return sortData([...data], sortIO.value)
   }, [sortIO.value, data])
 
@@ -123,7 +133,10 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
       >
         {visiableData.map((row, index) => {
           const rowKey = get(row, rowKeyPath)
-          const isSelected = selected.some((x) => isEqual(x, row))
+          const isSelected = selected.some(
+            (selectedOne) =>
+              isRowEqual?.(selectedOne, row) || selectedOne === row,
+          )
           return (
             <EasyRow
               isSelected={isSelected}
@@ -166,8 +179,17 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
               {columns.map(({ render, path, align }) => {
                 const value = get(row, path)
                 return (
-                  <EasyCell align={align} key={path} width={widthIO.value?.[path] || defaultWidth} height={LINE_HEIGHT}>
-                    {render ? renderCell(index, value, render, row) : value === null ? '' : String(value)}
+                  <EasyCell
+                    align={align}
+                    key={path}
+                    width={widthIO.value?.[path] || defaultWidth}
+                    height={LINE_HEIGHT}
+                  >
+                    {render
+                      ? renderCell(index, value, render, row)
+                      : value === null
+                      ? ''
+                      : String(value)}
                   </EasyCell>
                 )
               })}
@@ -191,10 +213,17 @@ function Footer<T extends FieldValues>({
 }) {
   return (
     <EasyRow>
-      {selectionMode === 'multiple' && <EasyCell height={LINE_HEIGHT} width={CHECKBOX_WIDTH}></EasyCell>}
+      {selectionMode === 'multiple' && (
+        <EasyCell height={LINE_HEIGHT} width={CHECKBOX_WIDTH}></EasyCell>
+      )}
       {columns.map(({ sum, path, align }) => {
         return (
-          <EasyCell align={align} key={path} width={widthIO.value?.[path] || defaultWidth} height={LINE_HEIGHT}>
+          <EasyCell
+            align={align}
+            key={path}
+            width={widthIO.value?.[path] || defaultWidth}
+            height={LINE_HEIGHT}
+          >
             {sum ? sumColumnValue(data, path).toLocaleString() : ''}
           </EasyCell>
         )
@@ -213,7 +242,12 @@ function sumColumnValue<T>(data: T[], path: Path<T> | 'actions') {
   }, 0)
 }
 
-function renderCell<T>(index: number, val: any, render: EasyTableCellRender<T>, row: T) {
+function renderCell<T>(
+  index: number,
+  val: any,
+  render: EasyTableCellRender<T>,
+  row: T,
+) {
   if (typeof render === 'function') {
     return render(val, row, index)
   }

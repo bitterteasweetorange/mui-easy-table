@@ -48,11 +48,15 @@ type All<Row> = {
   getRowDisabled?: (row: Row) => boolean
 }
 
-export function useTable<Row, Filter>(props: UseTableProps<Row, Filter>): UseTableReturn<Row> {
+export function useTable<Row, Filter>(
+  props: UseTableProps<Row, Filter>,
+): UseTableReturn<Row> {
   const { defaultSelected, rawData, ...all } = props
   const { rowKeyPath, getRowDisabled } = all
   const selectedIO = useIO<Row[]>(defaultSelected ?? [])
-  const [checkAll, setCheckAll] = useState(defaultSelected?.length === rawData.length)
+  const [checkAll, setCheckAll] = useState(
+    defaultSelected?.length === rawData.length,
+  )
 
   const addSelected = useCallback(
     (row: Row) => {
@@ -75,7 +79,10 @@ export function useTable<Row, Filter>(props: UseTableProps<Row, Filter>): UseTab
   )
 
   const addAllSelected = useCallback(() => {
-    selectedIO.onChange((pre) => [...pre, ...rawData.filter((r) => !getRowDisabled?.(r) && !pre.includes(r))])
+    selectedIO.onChange((pre) => [
+      ...pre,
+      ...rawData.filter((r) => !getRowDisabled?.(r) && !pre.includes(r)),
+    ])
     setCheckAll(true)
   }, [rawData, getRowDisabled, selectedIO, setCheckAll])
 
@@ -95,8 +102,6 @@ export function useTable<Row, Filter>(props: UseTableProps<Row, Filter>): UseTab
 
   useDeepCompareEffect(() => {
     dataIO.onChange(rawData)
-    // data changed, selected should be reset
-    selectedIO.onChange([])
   }, [rawData])
   const addRow = useCallback(
     (row: Row) => {
@@ -108,8 +113,16 @@ export function useTable<Row, Filter>(props: UseTableProps<Row, Filter>): UseTab
     (index: number) => {
       const deletedRow = dataIO.value[index]
       // if delete selected row
-      if (selectedIO.value.map((row) => get(row, rowKeyPath)).includes(get(deletedRow, rowKeyPath))) {
-        selectedIO.onChange(selectedIO.value.filter((row) => get(row, rowKeyPath) !== get(deletedRow, rowKeyPath)))
+      if (
+        selectedIO.value
+          .map((row) => get(row, rowKeyPath))
+          .includes(get(deletedRow, rowKeyPath))
+      ) {
+        selectedIO.onChange(
+          selectedIO.value.filter(
+            (row) => get(row, rowKeyPath) !== get(deletedRow, rowKeyPath),
+          ),
+        )
       }
       dataIO.onChange(dataIO.value.filter((_, i) => i !== index))
     },
@@ -118,7 +131,11 @@ export function useTable<Row, Filter>(props: UseTableProps<Row, Filter>): UseTab
   const updateRow = useCallback(
     (index: number, row: Row) => {
       // if update selected row
-      if (selectedIO.value.map((selectedRow) => get(selectedRow, rowKeyPath)).includes(get(row, rowKeyPath))) {
+      if (
+        selectedIO.value
+          .map((selectedRow) => get(selectedRow, rowKeyPath))
+          .includes(get(row, rowKeyPath))
+      ) {
         selectedIO.onChange(
           selectedIO.value.map((oldRow) => {
             if (get(oldRow, rowKeyPath) === get(row, rowKeyPath)) {

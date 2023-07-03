@@ -14,10 +14,10 @@ const meta = {
 export default meta
 
 export const Defalut = () => {
-  const io = useIO(mockData)
   const useTableReturn = useTable<MockShape, Record<string, any>>({
-    rawData: io.value,
+    rawData: mockData,
     rowKeyPath: 'id',
+    defaultSelected: [mockData[0], mockData[2]],
   })
 
   return (
@@ -26,6 +26,7 @@ export const Defalut = () => {
       selectionMode="multiple"
       useTableReturn={useTableReturn}
       columns={columns}
+      isRowEqual={(a, b) => a.id === b.id}
     />
   )
 }
@@ -104,28 +105,6 @@ export const Operation = () => {
           columns={columns}
         />
       </EasyTableProvider>
-    </>
-  )
-}
-
-export const MultipleSelect = () => {
-  const useTableReturn = useTable<MockShape, Record<string, any>>({
-    rawData: mockData,
-    defaultSelected: [mockData[0], mockData[2]],
-    rowKeyPath: 'id',
-  })
-
-  const { selected } = useTableReturn
-  return (
-    <>
-      <EasyTableProvider value={useTableReturn}>
-        <EasyTable<MockShape>
-          useTableReturn={useTableReturn}
-          columns={columns}
-          selectionMode="multiple"
-        />
-      </EasyTableProvider>
-      <Button variant="text">{selected.length} rows selected</Button>
     </>
   )
 }
