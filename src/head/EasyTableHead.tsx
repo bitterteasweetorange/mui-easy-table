@@ -59,7 +59,7 @@ export function EasyTableHead<T extends FieldValues>(
     <>
       <Box
         sx={{
-          display: 'flex',
+          display: 'contents',
         }}
         onMouseEnter={() => {
           setHover(true)
@@ -73,10 +73,12 @@ export function EasyTableHead<T extends FieldValues>(
             width={58}
             height={HEAD_HEIGHT}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
               position: 'sticky',
+              left: 0,
               top: 0,
+              zIndex: 2,
+              background: 'white',
+              boxShadow: '2px 0 5px -2px #8888884d',
             }}
           >
             <Checkbox
@@ -90,17 +92,25 @@ export function EasyTableHead<T extends FieldValues>(
         )}
         {columns
           .filter((col) => !hideListIO?.value.includes(col.path))
-          .map(({ sortable, headerName, path, align }) => (
+          .map(({ sortable, headerName, path, align }, colIndex) => (
             <EasyTableHeadItem
               key={path}
               headerName={headerName}
               align={align}
               showResizeIcon={hover}
               width={widthIO?.value?.[path] || defaultWidth}
-              sx={{
-                position: 'sticky',
-                top: 0,
-              }}
+              sx={
+                colIndex === columns.length - 1
+                  ? {
+                    position: 'sticky',
+                    right: 0,
+                    top: 0,
+                    zIndex: 2,
+                    background: 'white',
+                    boxShadow: '2px 0 5px 2px #8888884d',
+                  }
+                  : undefined
+              }
               onWidthChange={(nextWidth) => {
                 widthIO?.onChange((pre) => ({
                   ...pre,

@@ -12,6 +12,7 @@ import {
   EasyTableHeadWidthProps,
   defaultWidth,
 } from './head/EasyTableHead'
+import { HEAD_HEIGHT } from './head/EasyTableHeadItem'
 import { sortData } from './helper/sort'
 import { UseTableReturn } from './useTable'
 
@@ -131,10 +132,33 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
         overflow: 'auto',
         width: '100%',
         display: 'grid',
-        gridTemplateRows: `repeat(${visiableData.length},${LINE_HEIGHT + 1}px)`,
+        gridTemplateRows: `${HEAD_HEIGHT}px repeat(${visiableData.length},${LINE_HEIGHT + 1
+          }px)`,
         gridTemplateColumns,
       }}
     >
+      <EasyTableHead
+        setting={setting}
+        hideListIO={hideListIO}
+        sortIO={sortIO}
+        widthIO={widthIO}
+        columns={columns}
+        indeterminate={selected.length > 0 && selected.length < data.length}
+        checkedIO={
+          selectionMode === 'multiple'
+            ? {
+              value: selected.length === data.length,
+              onChange: () => {
+                if (!checkAll) {
+                  addAllSelected()
+                } else {
+                  deleteAllSelected()
+                }
+              },
+            }
+            : undefined
+        }
+      />
       {visiableData.map((row, index) => {
         const rowKey = get(row, rowKeyPath)
         const isSelected = selected.some(

@@ -91,13 +91,13 @@ function Content(props: EasyTableHeadItemProps) {
     headerName,
     align = 'left',
     onHideColumn,
+    sx,
     ...restProps
   } = props
   return (
     <EasyCell
       {...restProps}
       height={HEAD_HEIGHT}
-      width={width}
       sx={{
         display: 'flex',
         flexDirection: align === 'right' ? 'row-reverse' : 'row',
@@ -114,6 +114,7 @@ function Content(props: EasyTableHeadItemProps) {
             visibility: 'visible',
           },
         },
+        ...sx,
       }}
     >
       {headerName}
