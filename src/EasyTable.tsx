@@ -72,11 +72,11 @@ export type EasyTableCellRender<T> =
    * index: row index
    */
   | ((
-      val: any,
-      row: T,
-      index: number,
-      useTableReturn: UseTableReturn<T>,
-    ) => ReactNode)
+    val: any,
+    row: T,
+    index: number,
+    useTableReturn: UseTableReturn<T>,
+  ) => ReactNode)
 export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
   const {
     setting,
@@ -133,21 +133,24 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
         checkedIO={
           selectionMode === 'multiple'
             ? {
-                value: selected.length === data.length,
-                onChange: () => {
-                  if (!checkAll) {
-                    addAllSelected()
-                  } else {
-                    deleteAllSelected()
-                  }
-                },
-              }
+              value: selected.length === data.length,
+              onChange: () => {
+                if (!checkAll) {
+                  addAllSelected()
+                } else {
+                  deleteAllSelected()
+                }
+              },
+            }
             : undefined
         }
       />
       <Box
         sx={{
           overflow: 'auto',
+          '::-webkit-scrollbar': {
+            display: 'none',
+          },
         }}
       >
         {visiableData.map((row, index) => {
@@ -209,8 +212,8 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
                       {render
                         ? renderCell(index, value, render, row, useTableReturn)
                         : value === null
-                        ? ''
-                        : String(value)}
+                          ? ''
+                          : String(value)}
                     </EasyCell>
                   )
                 })}
