@@ -8,15 +8,18 @@ export interface EasyCellProps extends BoxProps {
 }
 
 const padding = 8
-export function EasyCell({ height, width, align = 'left', children, sx, ...boxProps }: EasyCellProps) {
+export function EasyCell({
+  height,
+  align = 'left',
+  children,
+  sx,
+  ...boxProps
+}: EasyCellProps) {
   const { palette } = useTheme()
   return (
     <Box
       {...boxProps}
       sx={{
-        maxWidth: width,
-        minWidth: width,
-        width: width,
         borderBottom: `1px solid ${palette.divider}`,
         position: 'relative',
         height,
@@ -24,7 +27,8 @@ export function EasyCell({ height, width, align = 'left', children, sx, ...boxPr
         padding: `0 ${padding}px`,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: align === 'left' ? 'start' : align === 'center' ? 'center' : 'end',
+        justifyContent:
+          align === 'left' ? 'start' : align === 'center' ? 'center' : 'end',
         ...sx,
       }}
     >

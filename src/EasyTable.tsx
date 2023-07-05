@@ -15,7 +15,7 @@ import {
 import { sortData } from './helper/sort'
 import { UseTableReturn } from './useTable'
 
-const CHECKBOX_WIDTH = 58
+export const CHECKBOX_WIDTH = 58
 const LINE_HEIGHT = 51
 
 export type EasyTableProps<T extends FieldValues> = {
@@ -112,115 +112,115 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
   }, [sortIO.value, data])
 
   const hideListIO = useIO<(Path<T> | 'actions')[]>([])
+
+  const gridTemplateColumns: string = useMemo(() => {
+    const columnWidth = columns
+      .map((col) => (get(widthIO.value, col.path) || defaultWidth) + 'px')
+      .join(' ')
+    return selectionMode === 'multiple'
+      ? CHECKBOX_WIDTH + 'px ' + columnWidth
+      : columnWidth
+  }, [widthIO.value])
+
   return (
     <Box
       sx={{
         border: '1px solid #E5E5E5',
         borderRadius: 1,
         height,
+        overflow: 'auto',
+        width: '100%',
         display: 'grid',
-        gridTemplateRows: 'auto 1fr auto',
-        overflowX: 'auto',
+        gridTemplateRows: `repeat(${visiableData.length},${LINE_HEIGHT + 1}px)`,
+        gridTemplateColumns,
       }}
     >
-      <EasyTableHead
-        setting={setting}
-        hideListIO={hideListIO}
-        sortIO={sortIO}
-        widthIO={widthIO}
-        columns={columns}
-        indeterminate={selected.length > 0 && selected.length < data.length}
-        checkedIO={
-          selectionMode === 'multiple'
-            ? {
-              value: selected.length === data.length,
-              onChange: () => {
-                if (!checkAll) {
-                  addAllSelected()
+      {visiableData.map((row, index) => {
+        const rowKey = get(row, rowKeyPath)
+        const isSelected = selected.some(
+          (selectedOne) =>
+            isRowEqual?.(selectedOne, row) || selectedOne === row,
+        )
+        return (
+          <EasyRow
+            isSelected={isSelected}
+            onClick={() => {
+              if (getRowDisabled?.(row) || !selectionMode) {
+                return
+              }
+              if (selectionMode === 'multiple') {
+                if (isSelected) {
+                  deleteSelected(row)
                 } else {
-                  deleteAllSelected()
+                  addSelected(row)
                 }
-              },
-            }
-            : undefined
-        }
-      />
-      <Box
-        sx={{
-          overflow: 'auto',
-          '::-webkit-scrollbar': {
-            display: 'none',
-          },
-        }}
-      >
-        {visiableData.map((row, index) => {
-          const rowKey = get(row, rowKeyPath)
-          const isSelected = selected.some(
-            (selectedOne) =>
-              isRowEqual?.(selectedOne, row) || selectedOne === row,
-          )
-          return (
-            <EasyRow
-              isSelected={isSelected}
-              onClick={() => {
-                if (getRowDisabled?.(row) || !selectionMode) {
-                  return
+              } else if (selectionMode === 'single') {
+                if (isSelected) {
+                  deleteSelected(row)
+                } else {
+                  switchSelected(row)
                 }
-                if (selectionMode === 'multiple') {
-                  if (isSelected) {
-                    deleteSelected(row)
-                  } else {
-                    addSelected(row)
-                  }
-                } else if (selectionMode === 'single') {
-                  if (isSelected) {
-                    deleteSelected(row)
-                  } else {
-                    switchSelected(row)
-                  }
-                }
-              }}
-              key={String(rowKey)}
-            >
-              {selectionMode === 'multiple' && (
-                <EasyCell height={LINE_HEIGHT} width={CHECKBOX_WIDTH}>
-                  <Checkbox
-                    disabled={getRowDisabled?.(row)}
-                    checked={isSelected}
-                    onChange={(e) => {
-                      const res = e.target.checked
-                      if (res) {
-                        addSelected(row)
-                      } else {
-                        deleteSelected(row)
-                      }
-                    }}
-                  />
-                </EasyCell>
-              )}
-              {columns
-                .filter((col) => !hideListIO.value.includes(col.path))
-                .map(({ render, path, align }) => {
-                  const value = get(row, path)
-                  return (
-                    <EasyCell
-                      align={align}
-                      key={path}
-                      width={widthIO.value?.[path] || defaultWidth}
-                      height={LINE_HEIGHT}
-                    >
-                      {render
-                        ? renderCell(index, value, render, row, useTableReturn)
-                        : value === null
-                          ? ''
-                          : String(value)}
-                    </EasyCell>
-                  )
-                })}
-            </EasyRow>
-          )
-        })}
-      </Box>
+              }
+            }}
+            key={String(rowKey)}
+          >
+            {selectionMode === 'multiple' && (
+              <EasyCell
+                sx={{
+                  position: 'sticky',
+                  left: 0,
+                  zIndex: 1,
+                  background: 'white',
+                  boxShadow: '2px 0 5px -2px #8888884d',
+                }}
+                height={LINE_HEIGHT}
+              >
+                <Checkbox
+                  disabled={getRowDisabled?.(row)}
+                  checked={isSelected}
+                  onChange={(e) => {
+                    const res = e.target.checked
+                    if (res) {
+                      addSelected(row)
+                    } else {
+                      deleteSelected(row)
+                    }
+                  }}
+                />
+              </EasyCell>
+            )}
+            {columns
+              .filter((col) => !hideListIO.value.includes(col.path))
+              .map(({ render, path, align }, colIndex) => {
+                const value = get(row, path)
+                return (
+                  <EasyCell
+                    align={align}
+                    key={path}
+                    height={LINE_HEIGHT}
+                    sx={
+                      colIndex === columns.length - 1
+                        ? {
+                          position: 'sticky',
+                          right: 0,
+                          zIndex: 1,
+                          background: 'white',
+                          boxShadow: '2px 0 5px 2px #8888884d',
+                        }
+                        : undefined
+                    }
+                  >
+                    {render
+                      ? renderCell(index, value, render, row, useTableReturn)
+                      : value === null
+                        ? ''
+                        : String(value)}
+                  </EasyCell>
+                )
+              })}
+          </EasyRow>
+        )
+      })}
       <Footer {...props} data={data} widthIO={widthIO} />
     </Box>
   )

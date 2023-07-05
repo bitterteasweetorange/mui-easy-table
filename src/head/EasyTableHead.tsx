@@ -4,7 +4,7 @@ import { FieldValues, Path } from 'react-hook-form'
 import { UseIOReturn } from 'react-utils-ts'
 import { EasyColumnProps } from '../EasyTable'
 import { EasyCell } from '../component/EasyCell'
-import { EasyTableHeadItem, headHeight } from './EasyTableHeadItem'
+import { EasyTableHeadItem, HEAD_HEIGHT } from './EasyTableHeadItem'
 
 export type EasyTableHeadSortProps<T extends FieldValues> = {
   path: Path<T>
@@ -71,10 +71,12 @@ export function EasyTableHead<T extends FieldValues>(
         {checkedIO && (
           <EasyCell
             width={58}
-            height={headHeight}
+            height={HEAD_HEIGHT}
             sx={{
               display: 'flex',
               alignItems: 'center',
+              position: 'sticky',
+              top: 0,
             }}
           >
             <Checkbox
@@ -95,6 +97,10 @@ export function EasyTableHead<T extends FieldValues>(
               align={align}
               showResizeIcon={hover}
               width={widthIO?.value?.[path] || defaultWidth}
+              sx={{
+                position: 'sticky',
+                top: 0,
+              }}
               onWidthChange={(nextWidth) => {
                 widthIO?.onChange((pre) => ({
                   ...pre,
@@ -104,21 +110,21 @@ export function EasyTableHead<T extends FieldValues>(
               sortIO={
                 sortable
                   ? {
-                      value:
-                        sortIO?.value?.path === path
-                          ? sortIO.value?.direction
-                          : 'none',
-                      onChange: (nextSort) => {
-                        if (nextSort === 'none') {
-                          sortIO?.onChange(null)
-                        } else if (path !== 'actions') {
-                          sortIO?.onChange({
-                            path,
-                            direction: nextSort as any,
-                          })
-                        }
-                      },
-                    }
+                    value:
+                      sortIO?.value?.path === path
+                        ? sortIO.value?.direction
+                        : 'none',
+                    onChange: (nextSort) => {
+                      if (nextSort === 'none') {
+                        sortIO?.onChange(null)
+                      } else if (path !== 'actions') {
+                        sortIO?.onChange({
+                          path,
+                          direction: nextSort as any,
+                        })
+                      }
+                    },
+                  }
                   : undefined
               }
               showSettingIcon={setting}

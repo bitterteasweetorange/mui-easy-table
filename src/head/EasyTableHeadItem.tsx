@@ -28,7 +28,7 @@ export interface EasyTableHeadItemProps extends BoxProps {
 
 export type EasyTableHeadItemSort = 'asc' | 'desc' | 'none'
 
-export const headHeight = 56
+export const HEAD_HEIGHT = 56
 export function EasyTableHeadItem({
   showResizeIcon,
   width,
@@ -40,9 +40,9 @@ export function EasyTableHeadItem({
     <ResizableBox
       style={{ position: 'relative' }}
       width={width}
-      height={headHeight}
-      minConstraints={[100, headHeight]}
-      maxConstraints={[1000, headHeight]}
+      height={HEAD_HEIGHT}
+      minConstraints={[100, HEAD_HEIGHT]}
+      maxConstraints={[1000, HEAD_HEIGHT]}
       onResize={(_, data) => {
         onWidthChange?.(data.size.width)
       }}
@@ -96,7 +96,7 @@ function Content(props: EasyTableHeadItemProps) {
   return (
     <EasyCell
       {...restProps}
-      height={headHeight}
+      height={HEAD_HEIGHT}
       width={width}
       sx={{
         display: 'flex',
@@ -157,7 +157,7 @@ function Content(props: EasyTableHeadItemProps) {
       {showSettingIcon && (
         <EasyTableHeadItemSetting
           onHideColumn={onHideColumn}
-          onManageColumns={() => {}}
+          onManageColumns={() => { }}
           sx={{
             visibility: 'hidden',
           }}

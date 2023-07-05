@@ -10,13 +10,15 @@ export function EasyRow(props: EasyRowProps) {
     <Box
       {...rest}
       sx={{
-        display: 'flex',
+        display: 'contents',
         justifyContent: 'start',
         alignItems: 'center',
         height: 51,
         backgroundColor: isSelected ? palette.action.selected : undefined,
         '&:hover': {
-          backgroundColor: isSelected ? alpha(palette.action.selected, 0.3) : palette.action.hover,
+          backgroundColor: isSelected
+            ? alpha(palette.action.selected, 0.3)
+            : palette.action.hover,
         },
       }}
     >
