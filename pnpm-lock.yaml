@@ -106,6 +106,9 @@ devDependencies:
   '@types/react-resizable':
     specifier: ^3.0.3
     version: 3.0.3
+  '@types/sort-array':
+    specifier: ^4.1.0
+    version: 4.1.0
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.59.9
     version: 5.59.9(@typescript-eslint/parser@5.59.9)(eslint@8.42.0)(typescript@5.1.3)
@@ -4928,6 +4931,10 @@ packages:
 
   /@types/sizzle@2.3.3:
     resolution: {integrity: sha1-/14vGQKWnTBSJaBHyKD9XJFc6+8=}
+    dev: true
+
+  /@types/sort-array@4.1.0:
+    resolution: {integrity: sha512-mnk6jrs36bAavj7EPYTzBEWqdybrzjS8muhV9knFY0YOCsI5HpBeq3+gN/E/nTSZxTKgSoW7+xVCrlTyD6+Rxw==}
     dev: true
 
   /@types/unist@2.0.6:
