@@ -1,24 +1,18 @@
-import { alpha, Box, BoxProps, useTheme } from '@mui/material'
+import { Box, BoxProps } from '@mui/material'
 
 export type EasyRowProps = BoxProps & {
   isSelected?: boolean
 }
 export function EasyRow(props: EasyRowProps) {
   const { children, isSelected, ...rest } = props
-  const { palette } = useTheme()
   return (
     <Box
       {...rest}
       sx={{
         display: 'contents',
-        justifyContent: 'start',
-        alignItems: 'center',
-        height: 51,
-        backgroundColor: isSelected ? palette.action.selected : undefined,
+        backgroundColor: isSelected ? '#eee' : 'white',
         '&:hover': {
-          backgroundColor: isSelected
-            ? alpha(palette.action.selected, 0.3)
-            : palette.action.hover,
+          backgroundColor: isSelected ? '#d9d9d9' : '#f6f6f6',
         },
       }}
     >

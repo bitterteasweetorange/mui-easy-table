@@ -19,7 +19,7 @@ export function EasyTableHeadItemSetting({
   onManageColumns,
 }: {
   sx?: SxProps
-  onHideColumn: () => void
+  onHideColumn?: () => void
   onManageColumns: () => void
 }) {
   const openIO = useIO(false)
@@ -41,7 +41,7 @@ export function EasyTableHeadItemSetting({
         <MenuList>
           <MenuItem
             onClick={() => {
-              onHideColumn()
+              onHideColumn?.()
               openIO.onChange(false)
             }}
           >

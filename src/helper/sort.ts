@@ -1,8 +1,11 @@
 import { FieldValues } from 'react-hook-form'
 import sortArray from 'sort-array'
-import { EasyTableHeadSortProps } from '../head/EasyTableHead'
+import { EasyHeadSortProps } from '../EasyHead'
 
-export function sortData<T extends FieldValues>(data: T[], sort: EasyTableHeadSortProps<T>) {
+export function sortData<T extends FieldValues>(
+  data: T[],
+  sort: EasyHeadSortProps<T>,
+) {
   if (sort === null) return data
   return sortArray(data, {
     by: sort.path,

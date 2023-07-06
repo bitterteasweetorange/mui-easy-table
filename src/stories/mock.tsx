@@ -1,7 +1,12 @@
 import { Sex, faker } from '@faker-js/faker'
-import { FemaleOutlined, MaleOutlined } from '@mui/icons-material'
+import {
+  DeleteOutline,
+  EditOutlined,
+  FemaleOutlined,
+  MaleOutlined,
+} from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
-import { Tooltip } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import React from 'react'
 import { EasyColumnProps } from '../EasyTable'
 import { UseTableReturn } from '../useTable'
@@ -38,7 +43,6 @@ export const columns: EasyColumnProps<MockShape>[] = [
   {
     path: 'id',
     headerName: 'ID',
-    width: 150,
   },
   {
     path: 'name.firstName',
@@ -46,13 +50,7 @@ export const columns: EasyColumnProps<MockShape>[] = [
     headerName: 'FirstName',
   },
   {
-    path: 'name.lastName',
-    width: 200,
-    headerName: 'LastName',
-  },
-  {
     path: 'gender',
-    width: 80,
     headerName: 'Gender',
     render: (val: Sex) => {
       return val === 'female' ? (
@@ -63,38 +61,46 @@ export const columns: EasyColumnProps<MockShape>[] = [
     },
   },
   {
-    path: 'name',
-    width: 500,
-    headerName: 'Name',
-    render: (value: MockShape['name']) =>
-      (value.firstName || '') + ' ' + value.lastName,
-  },
-  {
     path: 'money',
     headerName: 'Money',
     align: 'right',
     render: 'money',
     sortable: true,
     sum: true,
+    width: 100,
+  },
+  {
+    path: 'name',
+    width: 800,
+    headerName: 'Name',
+    render: (value: MockShape['name']) =>
+      (value.firstName || '') + ' ' + value.lastName,
+  },
+  {
+    path: 'name.lastName',
+    width: 200,
+    headerName: 'LastName',
   },
   {
     path: 'actions',
-    width: 250,
+    width: 150,
     headerName: 'Actions',
     align: 'right',
-    render: (_, row, index, useTableReturn) => (
-      <>
-        <UpdateRow
-          updateRecord={useTableReturn.handleData.update}
-          row={row}
-          index={index}
-        />
-        <DeleteRow
-          deleteRecord={useTableReturn.handleData.delete}
-          index={index}
-        />
-      </>
-    ),
+    render: (_, row, index, useTableReturn) =>
+      index !== 1 && (
+        <>
+          <UpdateRow
+            disabled={index === 0}
+            updateRecord={useTableReturn.handleData.update}
+            row={row}
+            index={index}
+          />
+          <DeleteRow
+            deleteRecord={useTableReturn.handleData.delete}
+            index={index}
+          />
+        </>
+      ),
   },
 ]
 
@@ -102,32 +108,38 @@ function UpdateRow({
   index,
   row,
   updateRecord,
+  disabled,
 }: {
   updateRecord: UseTableReturn<MockShape>['handleData']['update']
   row: MockShape
   index: number
+  disabled?: boolean
 }) {
   const [loading, setLoading] = React.useState(false)
-  return (
-    <LoadingButton
-      loading={loading}
-      color="success"
-      onClick={async (e) => {
-        e.stopPropagation()
-        setLoading(true)
-        await sleep(1000)
-        setLoading(false)
-        updateRecord(index, {
-          ...row,
-          name: {
-            firstName: 'Momo',
-            lastName: row.name.lastName,
-          },
-        })
-      }}
-    >
-      update
-    </LoadingButton>
+  return loading ? (
+    <LoadingButton loading></LoadingButton>
+  ) : (
+    <Tooltip title="update firstname as Momo">
+      <IconButton
+        disabled={disabled}
+        color="success"
+        onClick={async (e) => {
+          e.stopPropagation()
+          setLoading(true)
+          await sleep(1000)
+          setLoading(false)
+          updateRecord(index, {
+            ...row,
+            name: {
+              firstName: 'Momo',
+              lastName: row.name.lastName,
+            },
+          })
+        }}
+      >
+        <EditOutlined />
+      </IconButton>
+    </Tooltip>
   )
 }
 
@@ -139,10 +151,11 @@ function DeleteRow({
   index: number
 }) {
   const [loading, setLoading] = React.useState(false)
-  return (
-    <Tooltip title="delete this record">
-      <LoadingButton
-        loading={loading}
+  return loading ? (
+    <LoadingButton loading></LoadingButton>
+  ) : (
+    <Tooltip title="update firstname as Momo">
+      <IconButton
         color="warning"
         onClick={async (e) => {
           e.stopPropagation()
@@ -152,8 +165,8 @@ function DeleteRow({
           deleteRecord(index)
         }}
       >
-        delete
-      </LoadingButton>
+        <DeleteOutline />
+      </IconButton>
     </Tooltip>
   )
 }

@@ -4,20 +4,19 @@ import { get } from 'lodash'
 import { ReactNode, useMemo } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { UseIOReturn, useIO } from 'react-utils-ts'
-import { EasyCell } from './component/EasyCell'
-import { EasyRow } from './component/EasyRow'
+import { BODY_HEIGHT, EasyCell } from './EasyCell'
 import {
-  EasyTableHead,
-  EasyTableHeadSortProps,
-  EasyTableHeadWidthProps,
-  defaultWidth,
-} from './head/EasyTableHead'
-import { HEAD_HEIGHT } from './head/EasyTableHeadItem'
+  DEFAULT_WIDTH,
+  EasyHead,
+  EasyHeadSortProps,
+  EasyHeadWidthProps,
+} from './EasyHead'
+import { HEAD_HEIGHT } from './EasyHeadCell'
+import { EasyRow } from './component/EasyRow'
 import { sortData } from './helper/sort'
 import { UseTableReturn } from './useTable'
 
-export const CHECKBOX_WIDTH = 58
-const LINE_HEIGHT = 51
+export const CHECKBOX_WIDTH = 66
 
 export type EasyTableProps<T extends FieldValues> = {
   /**
@@ -73,6 +72,7 @@ export type EasyTableCellRender<T> =
    * index: row index
    */
   | ((
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     val: any,
     row: T,
     index: number,
@@ -98,15 +98,15 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
     switch: switchSelected,
   } = handleSelect
 
-  const widthIO = useIO<EasyTableHeadWidthProps<T>>(() => {
-    const res: EasyTableHeadWidthProps<T> = {}
+  const widthIO = useIO<EasyHeadWidthProps<T>>(() => {
+    const res: EasyHeadWidthProps<T> = {}
     columns.forEach((x) => {
-      res[x.path] = x.width || defaultWidth
+      res[x.path] = x.width || DEFAULT_WIDTH
     })
     return res
   })
 
-  const sortIO = useIO<EasyTableHeadSortProps<T>>(null)
+  const sortIO = useIO<EasyHeadSortProps<T>>(null)
 
   const visiableData: T[] = useMemo(() => {
     return sortData([...data], sortIO.value)
@@ -116,7 +116,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
 
   const gridTemplateColumns: string = useMemo(() => {
     const columnWidth = columns
-      .map((col) => (get(widthIO.value, col.path) || defaultWidth) + 'px')
+      .map((col) => (get(widthIO.value, col.path) || DEFAULT_WIDTH) + 'px')
       .join(' ')
     return selectionMode === 'multiple'
       ? CHECKBOX_WIDTH + 'px ' + columnWidth
@@ -128,16 +128,15 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
       sx={{
         border: '1px solid #E5E5E5',
         borderRadius: 1,
+        boxSizing: 'border-box',
         height,
         overflow: 'auto',
-        width: '100%',
         display: 'grid',
-        gridTemplateRows: `${HEAD_HEIGHT}px repeat(${visiableData.length},${LINE_HEIGHT + 1
-          }px)`,
+        gridTemplateRows: `${HEAD_HEIGHT}px repeat(${visiableData.length},${BODY_HEIGHT}px)`,
         gridTemplateColumns,
       }}
     >
-      <EasyTableHead
+      <EasyHead
         setting={setting}
         hideListIO={hideListIO}
         sortIO={sortIO}
@@ -194,10 +193,9 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
                   position: 'sticky',
                   left: 0,
                   zIndex: 1,
-                  background: 'white',
                   boxShadow: '2px 0 5px -2px #8888884d',
                 }}
-                height={LINE_HEIGHT}
+                height={BODY_HEIGHT}
               >
                 <Checkbox
                   disabled={getRowDisabled?.(row)}
@@ -221,15 +219,15 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
                   <EasyCell
                     align={align}
                     key={path}
-                    height={LINE_HEIGHT}
+                    height={BODY_HEIGHT}
                     sx={
                       colIndex === columns.length - 1
                         ? {
                           position: 'sticky',
                           right: 0,
                           zIndex: 1,
-                          background: 'white',
-                          boxShadow: '2px 0 5px 2px #8888884d',
+                          boxShadow:
+                            '0px 3px 14px 2px rgba(26, 59, 164, 0.06)',
                         }
                         : undefined
                     }
@@ -256,21 +254,36 @@ function Footer<T extends FieldValues>({
   widthIO,
   data,
 }: Pick<EasyTableProps<T>, 'columns' | 'selectionMode'> & {
-  widthIO: UseIOReturn<EasyTableHeadWidthProps<T>>
+  widthIO: UseIOReturn<EasyHeadWidthProps<T>>
   data: T[]
 }) {
   return (
     <EasyRow>
       {selectionMode === 'multiple' && (
-        <EasyCell height={LINE_HEIGHT} width={CHECKBOX_WIDTH}></EasyCell>
+        <EasyCell
+          cellBorder="top"
+          sx={{
+            position: 'sticky',
+            bottom: 0,
+            zIndex: 2,
+          }}
+          height={BODY_HEIGHT}
+          width={CHECKBOX_WIDTH}
+        ></EasyCell>
       )}
       {columns.map(({ sum, path, align }) => {
         return (
           <EasyCell
+            cellBorder="top"
             align={align}
             key={path}
-            width={widthIO.value?.[path] || defaultWidth}
-            height={LINE_HEIGHT}
+            width={widthIO.value?.[path] || DEFAULT_WIDTH}
+            height={BODY_HEIGHT}
+            sx={{
+              position: 'sticky',
+              bottom: 0,
+              zIndex: 2,
+            }}
           >
             {sum ? sumColumnValue(data, path).toLocaleString() : ''}
           </EasyCell>
