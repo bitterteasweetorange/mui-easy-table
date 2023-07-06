@@ -2,14 +2,14 @@
 
 ## features
 
-- [ ] frozen column
-- [ ] frozen header
-- [ ] frozen footer
-- [ ] resize column
-- [x] hide column
+- [x] frozen column
+- [x] frozen header
+- [x] frozen footer
+- [x] resize column
+- [ ] hide column
 - [ ] manage column
-- [x] row selection, default selection
+- [x] row selection, default selection, get row disabled
 - [x] row add/update/delete
 - [ ] row group
-- [ ] cell render
+- [x] cell render
 - [ ] virtualized
