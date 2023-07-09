@@ -17,14 +17,16 @@ export function EasyTableHeadItemSetting({
   sx,
   onHideColumn,
   onManageColumns,
+  anchorRef,
 }: {
+  anchorRef: React.RefObject<HTMLLIElement>
   sx?: SxProps
   onHideColumn?: () => void
   onManageColumns: () => void
 }) {
   const openIO = useIO(false)
 
-  const anchorRef = React.useRef<HTMLButtonElement>(null)
+  const anchorRefTrigger = React.useRef<HTMLButtonElement>(null)
   return (
     <>
       <IconButton
@@ -33,11 +35,11 @@ export function EasyTableHeadItemSetting({
         }}
         size="small"
         sx={sx}
-        ref={anchorRef}
+        ref={anchorRefTrigger}
       >
         <MoreVertIcon fontSize="small" />
       </IconButton>
-      <EasyPopper anchorRef={anchorRef} openIO={openIO}>
+      <EasyPopper anchorRef={anchorRefTrigger} openIO={openIO}>
         <MenuList>
           <MenuItem
             onClick={() => {
@@ -51,6 +53,7 @@ export function EasyTableHeadItemSetting({
             <ListItemText>hide column</ListItemText>
           </MenuItem>
           <MenuItem
+            ref={anchorRef}
             onClick={() => {
               onManageColumns()
               openIO.onChange(false)

@@ -12,4 +12,5 @@
 - [x] row add/update/delete
 - [ ] row group
 - [x] cell render
+- [ ] filter
 - [ ] virtualized

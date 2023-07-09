@@ -1,7 +1,7 @@
 import { Box, Checkbox } from '@mui/material'
 import { format } from 'date-fns'
 import { get } from 'lodash'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode, RefObject, useMemo, useRef } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
 import { ColumnManage } from './ColumnManage'
@@ -116,6 +116,8 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
       : columnWidth
   }, [columnState, selectionMode])
 
+  const openIO = useIO(false)
+  const anchorRef = useRef<HTMLLIElement>(null)
   return (
     <>
       <ColumnManage
@@ -123,6 +125,8 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
         columnState={columnState}
         updateColumnHidden={updateColumnHidden}
         updateColumnOrder={updateColumnOrder}
+        openIO={openIO}
+        anchorRef={anchorRef as unknown as RefObject<HTMLButtonElement>}
       />
       <Box
         sx={{
@@ -137,6 +141,8 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
         }}
       >
         <EasyHead
+          openIO={openIO}
+          anchorRef={anchorRef}
           setting={setting}
           sortIO={sortIO}
           columns={columns}

@@ -22,6 +22,8 @@ export interface EasyHeadCellProps extends Omit<BoxProps, 'width'> {
   sortIO?: UseIOReturn<EasyHeadCellSort>
   showSettingIcon?: boolean
   onHideColumn?: () => void
+  openIO: UseIOReturn<boolean>
+  anchorRef: React.RefObject<HTMLLIElement>
 }
 
 export type EasyHeadCellSort = 'asc' | 'desc' | 'none'
@@ -87,6 +89,8 @@ function Content(props: EasyHeadCellProps) {
     children: headerName,
     align = 'left',
     onHideColumn,
+    openIO,
+    anchorRef,
     ...restProps
   } = props
   return (
@@ -151,10 +155,10 @@ function Content(props: EasyHeadCellProps) {
       )}
       {showSettingIcon && (
         <EasyTableHeadItemSetting
+          anchorRef={anchorRef}
           onHideColumn={onHideColumn}
           onManageColumns={() => {
-            // TODO:
-            console.log()
+            openIO.onChange?.((pre) => !pre)
           }}
           sx={{
             visibility: 'hidden',

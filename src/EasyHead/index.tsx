@@ -18,6 +18,8 @@ export type EasyHeadWidthProps<T extends FieldValues> = Partial<
 >
 
 export type EasyHeadProps<Row extends FieldValues> = {
+  openIO: UseIOReturn<boolean>
+  anchorRef: React.RefObject<HTMLLIElement>
   columnState: ColumnState<Row>
   columns: EasyColumnProps<Row>[]
   /**
@@ -61,6 +63,8 @@ export function getGridTemplateColumns<T extends FieldValues>(
 
 export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
   const {
+    anchorRef,
+    openIO,
     indeterminate,
     setting,
     columns,
@@ -108,6 +112,8 @@ export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
           const { sortable, headerName, align } = column
           return (
             <EasyHeadCell
+              openIO={openIO}
+              anchorRef={anchorRef}
               key={path}
               align={align}
               width={width}

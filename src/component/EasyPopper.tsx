@@ -40,7 +40,7 @@ export function EasyPopper({
               placement === 'bottom-start' ? 'left top' : 'left bottom',
           }}
         >
-          <Paper>
+          <Paper elevation={6}>
             <ClickAwayListener onClickAway={handleClose}>
               {children}
             </ClickAwayListener>
