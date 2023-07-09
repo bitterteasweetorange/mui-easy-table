@@ -4,6 +4,7 @@ import { get } from 'lodash'
 import { ReactNode, useMemo } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { UseIOReturn, useIO } from 'react-utils-ts'
+import { ColumnManage } from './ColumnManage'
 import { BODY_HEIGHT, EasyCell } from './EasyCell'
 import {
   DEFAULT_WIDTH,
@@ -39,6 +40,10 @@ export type EasyTableProps<T extends FieldValues> = {
    * setting of columns
    * */
   setting?: boolean
+  /**
+   * hide column's path
+   * */
+  defautltHide?: (Path<T> | 'actions')[]
 }
 export type EasyColumnProps<T extends FieldValues> = {
   path: Path<T> | 'actions'
@@ -72,12 +77,12 @@ export type EasyTableCellRender<T> =
    * index: row index
    */
   | ((
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    val: any,
-    row: T,
-    index: number,
-    useTableReturn: UseTableReturn<T>,
-  ) => ReactNode)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      val: any,
+      row: T,
+      index: number,
+      useTableReturn: UseTableReturn<T>,
+    ) => ReactNode)
 export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
   const {
     setting,
@@ -86,6 +91,7 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
     columns,
     selectionMode,
     useTableReturn,
+    defautltHide = [],
   } = props
   const { rowKeyPath, selected, data, getRowDisabled, checkAll, handleSelect } =
     useTableReturn
@@ -112,139 +118,143 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
     return sortData([...data], sortIO.value)
   }, [sortIO.value, data])
 
-  const hideListIO = useIO<(Path<T> | 'actions')[]>([])
+  const hideListIO = useIO<(Path<T> | 'actions')[]>(defautltHide)
 
   const gridTemplateColumns: string = useMemo(() => {
     const columnWidth = columns
+      .filter((col) => !hideListIO.value.includes(col.path))
       .map((col) => (get(widthIO.value, col.path) || DEFAULT_WIDTH) + 'px')
       .join(' ')
     return selectionMode === 'multiple'
       ? CHECKBOX_WIDTH + 'px ' + columnWidth
       : columnWidth
-  }, [widthIO.value])
+  }, [widthIO.value, columns, hideListIO.value, selectionMode])
 
   return (
-    <Box
-      sx={{
-        border: '1px solid #E5E5E5',
-        borderRadius: 1,
-        boxSizing: 'border-box',
-        height,
-        overflow: 'auto',
-        display: 'grid',
-        gridTemplateRows: `${HEAD_HEIGHT}px repeat(${visiableData.length},${BODY_HEIGHT}px)`,
-        gridTemplateColumns,
-      }}
-    >
-      <EasyHead
-        setting={setting}
-        hideListIO={hideListIO}
-        sortIO={sortIO}
-        widthIO={widthIO}
-        columns={columns}
-        indeterminate={selected.length > 0 && selected.length < data.length}
-        checkedIO={
-          selectionMode === 'multiple'
-            ? {
-              value: selected.length === data.length,
-              onChange: () => {
-                if (!checkAll) {
-                  addAllSelected()
-                } else {
-                  deleteAllSelected()
-                }
-              },
-            }
-            : undefined
-        }
-      />
-      {visiableData.map((row, index) => {
-        const rowKey = get(row, rowKeyPath)
-        const isSelected = selected.some(
-          (selectedOne) =>
-            isRowEqual?.(selectedOne, row) || selectedOne === row,
-        )
-        return (
-          <EasyRow
-            isSelected={isSelected}
-            onClick={() => {
-              if (getRowDisabled?.(row) || !selectionMode) {
-                return
-              }
-              if (selectionMode === 'multiple') {
-                if (isSelected) {
-                  deleteSelected(row)
-                } else {
-                  addSelected(row)
-                }
-              } else if (selectionMode === 'single') {
-                if (isSelected) {
-                  deleteSelected(row)
-                } else {
-                  switchSelected(row)
-                }
-              }
-            }}
-            key={String(rowKey)}
-          >
-            {selectionMode === 'multiple' && (
-              <EasyCell
-                sx={{
-                  position: 'sticky',
-                  left: 0,
-                  zIndex: 1,
-                  boxShadow: '2px 0 5px -2px #8888884d',
-                }}
-                height={BODY_HEIGHT}
-              >
-                <Checkbox
-                  disabled={getRowDisabled?.(row)}
-                  checked={isSelected}
-                  onChange={(e) => {
-                    const res = e.target.checked
-                    if (res) {
-                      addSelected(row)
+    <>
+      <ColumnManage hideListIO={hideListIO} columns={columns} />
+      <Box
+        sx={{
+          border: '1px solid #E5E5E5',
+          borderRadius: 1,
+          boxSizing: 'border-box',
+          height,
+          overflow: 'auto',
+          display: 'grid',
+          gridTemplateRows: `${HEAD_HEIGHT}px repeat(${visiableData.length},${BODY_HEIGHT}px)`,
+          gridTemplateColumns,
+        }}
+      >
+        <EasyHead
+          setting={setting}
+          hideListIO={hideListIO}
+          sortIO={sortIO}
+          widthIO={widthIO}
+          columns={columns}
+          indeterminate={selected.length > 0 && selected.length < data.length}
+          checkedIO={
+            selectionMode === 'multiple'
+              ? {
+                  value: selected.length === data.length,
+                  onChange: () => {
+                    if (!checkAll) {
+                      addAllSelected()
                     } else {
-                      deleteSelected(row)
+                      deleteAllSelected()
                     }
+                  },
+                }
+              : undefined
+          }
+        />
+        {visiableData.map((row, index) => {
+          const rowKey = get(row, rowKeyPath)
+          const isSelected = selected.some(
+            (selectedOne) =>
+              isRowEqual?.(selectedOne, row) || selectedOne === row,
+          )
+          return (
+            <EasyRow
+              isSelected={isSelected}
+              onClick={() => {
+                if (getRowDisabled?.(row) || !selectionMode) {
+                  return
+                }
+                if (selectionMode === 'multiple') {
+                  if (isSelected) {
+                    deleteSelected(row)
+                  } else {
+                    addSelected(row)
+                  }
+                } else if (selectionMode === 'single') {
+                  if (isSelected) {
+                    deleteSelected(row)
+                  } else {
+                    switchSelected(row)
+                  }
+                }
+              }}
+              key={String(rowKey)}
+            >
+              {selectionMode === 'multiple' && (
+                <EasyCell
+                  sx={{
+                    position: 'sticky',
+                    left: 0,
+                    zIndex: 1,
+                    boxShadow: '2px 0 5px -2px #8888884d',
                   }}
-                />
-              </EasyCell>
-            )}
-            {columns
-              .filter((col) => !hideListIO.value.includes(col.path))
-              .map(({ render, path, align }, colIndex) => {
-                const value = get(row, path)
-                return (
-                  <EasyCell
-                    align={align}
-                    key={path}
-                    height={BODY_HEIGHT}
-                    sx={
-                      colIndex === columns.length - 1
-                        ? {
-                          position: 'sticky',
-                          right: 0,
-                          zIndex: 1,
-                          boxShadow:
-                            '0px 3px 14px 2px rgba(26, 59, 164, 0.06)',
-                        }
-                        : undefined
-                    }
-                  >
-                    {render
-                      ? renderCell(index, value, render, row, useTableReturn)
-                      : value === null
+                  height={BODY_HEIGHT}
+                >
+                  <Checkbox
+                    disabled={getRowDisabled?.(row)}
+                    checked={isSelected}
+                    onChange={(e) => {
+                      const res = e.target.checked
+                      if (res) {
+                        addSelected(row)
+                      } else {
+                        deleteSelected(row)
+                      }
+                    }}
+                  />
+                </EasyCell>
+              )}
+              {columns
+                .filter((col) => !hideListIO.value.includes(col.path))
+                .map(({ render, path, align }, colIndex) => {
+                  const value = get(row, path)
+                  return (
+                    <EasyCell
+                      align={align}
+                      key={path}
+                      height={BODY_HEIGHT}
+                      sx={
+                        colIndex === columns.length - 1
+                          ? {
+                              position: 'sticky',
+                              right: 0,
+                              zIndex: 1,
+                              boxShadow:
+                                '0px 3px 14px 2px rgba(26, 59, 164, 0.06)',
+                            }
+                          : undefined
+                      }
+                    >
+                      {render
+                        ? renderCell(index, value, render, row, useTableReturn)
+                        : value === null
                         ? ''
                         : String(value)}
-                  </EasyCell>
-                )
-              })}
-          </EasyRow>
-        )
-      })}
-      <Footer {...props} data={data} widthIO={widthIO} />
-    </Box>
+                    </EasyCell>
+                  )
+                })}
+            </EasyRow>
+          )
+        })}
+        <Footer {...props} data={data} widthIO={widthIO} />
+      </Box>
+    </>
   )
 }
 

@@ -6,7 +6,7 @@
 - [x] frozen header
 - [x] frozen footer
 - [x] resize column
-- [ ] hide column
+- [x] hide column, default hide
 - [ ] manage column
 - [x] row selection, default selection, get row disabled
 - [x] row add/update/delete

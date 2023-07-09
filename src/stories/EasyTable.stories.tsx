@@ -11,6 +11,7 @@ const meta = {
 export default meta
 
 export const Defalut = () => {
+  // eslint-disable-next-line
   const useTableReturn = useTable<MockShape, Record<string, any>>({
     rawData: mockData,
     rowKeyPath: 'id',
@@ -21,9 +22,8 @@ export const Defalut = () => {
   const { selected } = useTableReturn
   return (
     <>
-      {selected.length} selected:
-      {selected.map((user) => user.name.firstName).join(', ')}
       <EasyTable<MockShape>
+        defautltHide={['name.lastName']}
         setting
         height={`calc(100vh - 120px)`}
         selectionMode="multiple"
@@ -31,6 +31,8 @@ export const Defalut = () => {
         columns={columns}
         isRowEqual={(a, b) => a.id === b.id}
       />
+      {selected.length} selected:
+      {selected.map((user) => user.name.firstName).join(', ')}
     </>
   )
 }
