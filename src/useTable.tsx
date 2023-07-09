@@ -3,7 +3,10 @@ import { useCallback, useState } from 'react'
 import { Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
 import useDeepCompareEffect from 'use-deep-compare-effect'
+import { DEFAULT_WIDTH, EasyPath } from './EasyHead'
 
+type ColumnItemState<Row> = Required<DefaultColumnItemState<Row>>
+export type ColumnState<Row> = ColumnItemState<Row>[]
 export type UseTableReturn<Row> = {
   data: Row[]
   handleData: {
@@ -32,12 +35,37 @@ export type UseTableReturn<Row> = {
    * when getRowDisabled is defined, toggle checkbox
    * */
   checkAll: boolean
+  columnState: ColumnState<Row>
+  /**
+   * update column hidden
+   */
+  updateColumnHidden: (path: EasyPath<Row>, nextHidden: boolean) => void
+  /**
+   * update column width
+   */
+  updateColumnWidth: (path: EasyPath<Row>, nextWidth: number) => void
+  /**
+   * order column
+   */
+  updateColumnOrder: (startIndex: number, endIndex: number) => void
 } & All<Row>
 
+export type DefaultColumnItemState<Row> = {
+  path: EasyPath<Row>
+  /**
+   * @default 100
+   * */
+  width?: number
+  /**
+   * @default false
+   * */
+  hidden?: boolean
+}
 // eslint-disable-next-line
 export type UseTableProps<Row, _Filter> = {
   rawData: Row[]
   defaultSelected?: Row[]
+  defaultColumnState: DefaultColumnItemState<Row>[]
 } & All<Row>
 
 type All<Row> = {
@@ -51,7 +79,7 @@ type All<Row> = {
 export function useTable<Row, Filter>(
   props: UseTableProps<Row, Filter>,
 ): UseTableReturn<Row> {
-  const { defaultSelected, rawData, ...all } = props
+  const { defaultSelected, defaultColumnState, rawData, ...all } = props
   const { rowKeyPath, getRowDisabled } = all
   const selectedIO = useIO<Row[]>(defaultSelected ?? [])
   const [checkAll, setCheckAll] = useState(
@@ -150,10 +178,55 @@ export function useTable<Row, Filter>(
     [dataIO, rowKeyPath, selectedIO],
   )
 
+  const [columnState, setColumnState] = useState<ColumnState<Row>>(() => {
+    return defaultColumnState.map((col) => ({
+      path: col.path,
+      width: col.width ?? DEFAULT_WIDTH,
+      hidden: col.hidden ?? false,
+    }))
+  })
+
+  const updateColumnOrder: UseTableReturn<Row>['updateColumnOrder'] =
+    useCallback((startIndex, endIndex) => {
+      setColumnState((pre) => {
+        const result = Array.from(pre)
+        const [removed] = result.splice(startIndex, 1)
+        result.splice(endIndex, 0, removed)
+
+        return result
+      })
+    }, [])
+
+  const updateColumnHidden: UseTableReturn<Row>['updateColumnHidden'] =
+    useCallback((path, nextHidden) => {
+      setColumnState((pre) => {
+        const result = Array.from(pre)
+        const index = result.findIndex((col) => isEqual(col.path, path))
+        result[index].hidden = nextHidden
+
+        return result
+      })
+    }, [])
+
+  const updateColumnWidth: UseTableReturn<Row>['updateColumnWidth'] =
+    useCallback((path, nextWidth) => {
+      setColumnState((pre) => {
+        const result = Array.from(pre)
+        const index = result.findIndex((col) => isEqual(col.path, path))
+        result[index].width = nextWidth
+
+        return result
+      })
+    }, [])
+
   return {
     ...all,
     data: dataIO.value,
     selected: selectedIO.value,
+    columnState,
+    updateColumnOrder,
+    updateColumnHidden,
+    updateColumnWidth,
     handleSelect: {
       add: addSelected,
       delete: deleteSelected,

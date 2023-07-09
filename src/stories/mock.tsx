@@ -9,7 +9,7 @@ import { LoadingButton } from '@mui/lab'
 import { IconButton, Tooltip } from '@mui/material'
 import React from 'react'
 import { EasyColumnProps } from '../EasyTable'
-import { UseTableReturn } from '../useTable'
+import { DefaultColumnItemState, UseTableReturn } from '../useTable'
 
 export type MockShape = {
   id: number
@@ -39,6 +39,35 @@ export const mockData: MockShape[] = new Array(100)
     }
   })
 
+export const defaultColumnState: DefaultColumnItemState<MockShape>[] = [
+  {
+    path: 'id',
+  },
+  {
+    path: 'name.firstName',
+    width: 200,
+  },
+  {
+    path: 'gender',
+  },
+  {
+    path: 'money',
+    width: 150,
+  },
+  {
+    path: 'name',
+    width: 800,
+  },
+  {
+    path: 'name.lastName',
+    hidden: true,
+    width: 200,
+  },
+  {
+    path: 'actions',
+    width: 150,
+  },
+]
 export const columns: EasyColumnProps<MockShape>[] = [
   {
     path: 'id',
@@ -46,7 +75,6 @@ export const columns: EasyColumnProps<MockShape>[] = [
   },
   {
     path: 'name.firstName',
-    width: 200,
     headerName: 'FirstName',
   },
   {
@@ -67,23 +95,19 @@ export const columns: EasyColumnProps<MockShape>[] = [
     render: 'money',
     sortable: true,
     sum: true,
-    width: 100,
   },
   {
     path: 'name',
-    width: 800,
     headerName: 'Name',
     render: (value: MockShape['name']) =>
       (value.firstName || '') + ' ' + value.lastName,
   },
   {
     path: 'name.lastName',
-    width: 200,
     headerName: 'LastName',
   },
   {
     path: 'actions',
-    width: 150,
     headerName: 'Actions',
     align: 'right',
     render: (_, row, index, useTableReturn) =>

@@ -4,6 +4,7 @@ import { UseIOReturn } from 'react-utils-ts'
 import { EasyCell } from '../EasyCell'
 import { EasyHeadCell, HEAD_HEIGHT } from '../EasyHeadCell'
 import { CHECKBOX_WIDTH, EasyColumnProps } from '../EasyTable'
+import { ColumnState } from '../useTable'
 
 export type EasyPath<T> = Path<T> | 'actions'
 
@@ -16,17 +17,21 @@ export type EasyHeadWidthProps<T extends FieldValues> = Partial<
   Record<EasyPath<T>, number>
 >
 
-export type EasyHeadProps<T extends FieldValues> = {
-  columns: EasyColumnProps<T>[]
+export type EasyHeadProps<Row extends FieldValues> = {
+  columnState: ColumnState<Row>
+  columns: EasyColumnProps<Row>[]
   /**
    * if passed, the column will be sortable
    * */
-  sortIO?: UseIOReturn<EasyHeadSortProps<T>>
+  sortIO?: UseIOReturn<EasyHeadSortProps<Row>>
   /**
-   * if passed, the column will be resizable
-   * default width is 100
-   * */
-  widthIO?: UseIOReturn<EasyHeadWidthProps<T>>
+   * update column width
+   */
+  updateColumnWidth: (path: EasyPath<Row>, nextWidth: number) => void
+  /**
+   * update column hidden
+   */
+  updateColumnHidden: (path: EasyPath<Row>, nextHidden: boolean) => void
   /**
    * checkbox checked state
    * */
@@ -34,12 +39,9 @@ export type EasyHeadProps<T extends FieldValues> = {
   indeterminate?: boolean
   /**
    * if true, setting button will be shown on hover line
+   * include hide column
    * */
   setting?: boolean
-  /**
-   * if passed, the column will be hidden
-   * */
-  hideListIO?: UseIOReturn<(Path<T> | 'actions')[]>
 }
 
 export const DEFAULT_WIDTH = 100
@@ -59,13 +61,14 @@ export function getGridTemplateColumns<T extends FieldValues>(
 
 export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
   const {
-    hideListIO,
     indeterminate,
-    widthIO,
     setting,
     columns,
     sortIO,
     checkedIO,
+    columnState,
+    updateColumnHidden,
+    updateColumnWidth,
   } = props
   return (
     <Box
@@ -95,58 +98,62 @@ export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
           />
         </EasyCell>
       )}
-      {columns
-        .filter((col) => !hideListIO?.value.includes(col.path))
-        .map(({ sortable, headerName, path, align }, colIndex) => (
-          <EasyHeadCell
-            key={path}
-            align={align}
-            width={widthIO?.value?.[path] || DEFAULT_WIDTH}
-            sx={{
-              position: 'sticky',
-              right: colIndex === columns.length - 1 ? 0 : undefined,
-              top: 0,
-              zIndex: 2,
-              background: 'white',
-              boxShadow:
-                colIndex === columns.length - 1
-                  ? '0px 3px 14px 2px rgba(26, 59, 164, 0.06)'
-                  : undefined,
-            }}
-            onWidthChange={(nextWidth) => {
-              widthIO?.onChange((pre) => ({
-                ...pre,
-                [path]: nextWidth,
-              }))
-            }}
-            sortIO={
-              sortable
-                ? {
-                    value:
-                      sortIO?.value?.path === path
-                        ? sortIO.value?.direction
-                        : 'none',
-                    onChange: (nextSort) => {
-                      if (nextSort === 'none') {
-                        sortIO?.onChange(null)
-                      } else if (path !== 'actions') {
-                        sortIO?.onChange({
-                          path,
-                          direction: nextSort as 'asc' | 'desc',
-                        })
-                      }
-                    },
-                  }
-                : undefined
-            }
-            showSettingIcon={setting}
-            onHideColumn={() => {
-              hideListIO?.onChange((pre) => [...pre, path])
-            }}
-          >
-            {headerName}
-          </EasyHeadCell>
-        ))}
+      {columnState
+        // .filter((columnItemState) => !columnItemState.hidden)
+        .map((columnItemState, colIndex) => {
+          const { hidden, path, width } = columnItemState
+          if (hidden) return null
+          const column = columns.find((col) => col.path === path)
+          if (!column) return null
+          const { sortable, headerName, align } = column
+          return (
+            <EasyHeadCell
+              key={path}
+              align={align}
+              width={width}
+              sx={{
+                position: 'sticky',
+                right: colIndex === columns.length - 1 ? 0 : undefined,
+                top: 0,
+                zIndex: 2,
+                background: 'white',
+                boxShadow:
+                  colIndex === columns.length - 1
+                    ? '0px 3px 14px 2px rgba(26, 59, 164, 0.06)'
+                    : undefined,
+              }}
+              onWidthChange={(nextWidth) => {
+                updateColumnWidth(path, nextWidth)
+              }}
+              sortIO={
+                sortable
+                  ? {
+                      value:
+                        sortIO?.value?.path === path
+                          ? sortIO.value?.direction
+                          : 'none',
+                      onChange: (nextSort) => {
+                        if (nextSort === 'none') {
+                          sortIO?.onChange(null)
+                        } else if (path !== 'actions') {
+                          sortIO?.onChange({
+                            path,
+                            direction: nextSort as 'asc' | 'desc',
+                          })
+                        }
+                      },
+                    }
+                  : undefined
+              }
+              showSettingIcon={setting}
+              onHideColumn={() => {
+                updateColumnHidden(path, true)
+              }}
+            >
+              {headerName}
+            </EasyHeadCell>
+          )
+        })}
     </Box>
   )
 }

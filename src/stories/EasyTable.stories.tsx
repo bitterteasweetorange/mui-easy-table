@@ -1,7 +1,7 @@
 import type { Meta } from '@storybook/react'
 import { EasyTable } from '../EasyTable'
 import { useTable } from '../useTable'
-import { MockShape, columns, mockData } from './mock'
+import { MockShape, columns, defaultColumnState, mockData } from './mock'
 
 const meta = {
   title: 'EasyTable',
@@ -11,19 +11,18 @@ const meta = {
 export default meta
 
 export const Defalut = () => {
-  // eslint-disable-next-line
   const useTableReturn = useTable<MockShape, Record<string, any>>({
     rawData: mockData,
     rowKeyPath: 'id',
     defaultSelected: [mockData[0], mockData[2]],
     getRowDisabled: (row) => row.id === 2 || row.id === 3,
+    defaultColumnState,
   })
 
   const { selected } = useTableReturn
   return (
     <>
       <EasyTable<MockShape>
-        defautltHide={['name.lastName']}
         setting
         height={`calc(100vh - 120px)`}
         selectionMode="multiple"
@@ -42,6 +41,7 @@ export const SingleSelected = () => {
     rowKeyPath: 'id',
     rawData: mockData,
     defaultSelected: [mockData[0]],
+    defaultColumnState,
   })
 
   return (

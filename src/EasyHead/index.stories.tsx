@@ -1,8 +1,10 @@
 import { Box } from '@mui/material'
 import { Meta } from '@storybook/react'
+import { useCallback, useState } from 'react'
 import { useIO } from 'react-utils-ts'
 import { CHECKBOX_WIDTH } from 'src/EasyTable'
-import { EasyHead, EasyHeadSortProps, EasyHeadWidthProps, EasyPath } from '.'
+import { EasyHead, EasyHeadSortProps } from '.'
+import { ColumnState, UseTableReturn } from '../useTable'
 
 const meta = {
   title: 'component/EasyHead',
@@ -22,14 +24,46 @@ export const Default = () => {
     direction: 'asc',
   })
 
-  const widthIO = useIO<EasyHeadWidthProps<Shape>>({
-    id: 150,
-    name: 300,
-    age: 100,
-  })
-
   const checkedIO = useIO<boolean>(false)
-  const hideListIO = useIO<EasyPath<Shape>[]>([])
+  const [columnState, setColumnState] = useState<ColumnState<Shape>>([
+    {
+      path: 'id',
+      width: 150,
+      hidden: false,
+    },
+    {
+      path: 'name',
+      width: 250,
+      hidden: false,
+    },
+    {
+      path: 'age',
+      width: 350,
+      hidden: false,
+    },
+  ])
+
+  const updateColumnHidden: UseTableReturn<Shape>['updateColumnHidden'] =
+    useCallback((path, nextHidden) => {
+      setColumnState((pre) => {
+        const result = Array.from(pre)
+        const index = result.findIndex((col) => col.path === path)
+        result[index].hidden = nextHidden
+
+        return result
+      })
+    }, [])
+
+  const updateColumnWidth: UseTableReturn<Shape>['updateColumnWidth'] =
+    useCallback((path, nextWidth) => {
+      setColumnState((pre) => {
+        const result = Array.from(pre)
+        const index = result.findIndex((col) => col.path === path)
+        result[index].width = nextWidth
+
+        return result
+      })
+    }, [])
 
   return (
     <Box
@@ -40,7 +74,6 @@ export const Default = () => {
       }}
     >
       <EasyHead<Shape>
-        hideListIO={hideListIO}
         setting
         columns={[
           {
@@ -60,8 +93,10 @@ export const Default = () => {
           },
         ]}
         sortIO={sortIO}
-        widthIO={widthIO}
         checkedIO={checkedIO}
+        updateColumnHidden={updateColumnHidden}
+        updateColumnWidth={updateColumnWidth}
+        columnState={columnState}
       />
     </Box>
   )
