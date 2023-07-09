@@ -113,7 +113,7 @@ export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
           return (
             <EasyHeadCell
               openIO={openIO}
-              anchorRef={anchorRef}
+              anchorRef={colIndex === 0 ? anchorRef : undefined}
               key={path}
               align={align}
               width={width}

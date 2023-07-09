@@ -1,6 +1,6 @@
 {
   "name": "mui-easy-table",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "types": "dist/src/index.d.ts",

@@ -9,6 +9,7 @@ export interface EasyCellProps extends BoxProps {
    * @default: bottom
    * */
   cellBorder?: 'bottom' | 'top' | 'none'
+  anchorRef?: React.RefObject<HTMLLIElement>
 }
 
 const padding = 12
@@ -19,12 +20,14 @@ export function EasyCell({
   height,
   sx,
   cellBorder = 'bottom',
+  anchorRef,
   ...boxProps
 }: EasyCellProps) {
   const { palette } = useTheme()
   return (
     <Box
       {...boxProps}
+      ref={anchorRef}
       sx={{
         backgroundColor: 'inherit',
         height,

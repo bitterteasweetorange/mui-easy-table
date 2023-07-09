@@ -17,9 +17,7 @@ export function EasyTableHeadItemSetting({
   sx,
   onHideColumn,
   onManageColumns,
-  anchorRef,
 }: {
-  anchorRef: React.RefObject<HTMLLIElement>
   sx?: SxProps
   onHideColumn?: () => void
   onManageColumns: () => void
@@ -53,7 +51,6 @@ export function EasyTableHeadItemSetting({
             <ListItemText>hide column</ListItemText>
           </MenuItem>
           <MenuItem
-            ref={anchorRef}
             onClick={() => {
               onManageColumns()
               openIO.onChange(false)

@@ -1,9 +1,9 @@
 import { Box } from '@mui/material'
 import { Meta } from '@storybook/react'
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useIO } from 'react-utils-ts'
-import { CHECKBOX_WIDTH } from 'src/EasyTable'
 import { EasyHead, EasyHeadSortProps } from '.'
+import { CHECKBOX_WIDTH } from '../EasyTable'
 import { ColumnState, UseTableReturn } from '../useTable'
 
 const meta = {
@@ -65,6 +65,8 @@ export const Default = () => {
       })
     }, [])
 
+  const openIO = useIO(false)
+  const anchorRef = useRef<HTMLLIElement>(null)
   return (
     <Box
       sx={{
@@ -74,6 +76,8 @@ export const Default = () => {
       }}
     >
       <EasyHead<Shape>
+        anchorRef={anchorRef}
+        openIO={openIO}
         setting
         columns={[
           {
