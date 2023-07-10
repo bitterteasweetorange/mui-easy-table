@@ -17,11 +17,14 @@ export type EasyHeadWidthProps<T extends FieldValues> = Partial<
   Record<EasyPath<T>, number>
 >
 
-export type EasyHeadProps<Row extends FieldValues> = {
+export type EasyHeadProps<
+  Row extends FieldValues,
+  Filter extends FieldValues | null = null,
+> = {
   openIO: UseIOReturn<boolean>
   anchorRef: React.RefObject<HTMLLIElement>
   columnState: ColumnState<Row>
-  columns: EasyColumnProps<Row>[]
+  columns: EasyColumnProps<Row, Filter>[]
   /**
    * if passed, the column will be sortable
    * */
@@ -61,7 +64,10 @@ export function getGridTemplateColumns<T extends FieldValues>(
     : columnWidth
 }
 
-export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
+export function EasyHead<
+  T extends FieldValues,
+  Filter extends FieldValues | null = null,
+>(props: EasyHeadProps<T, Filter>) {
   const {
     anchorRef,
     openIO,
@@ -134,21 +140,21 @@ export function EasyHead<T extends FieldValues>(props: EasyHeadProps<T>) {
               sortIO={
                 sortable
                   ? {
-                      value:
-                        sortIO?.value?.path === path
-                          ? sortIO.value?.direction
-                          : 'none',
-                      onChange: (nextSort) => {
-                        if (nextSort === 'none') {
-                          sortIO?.onChange(null)
-                        } else if (path !== 'actions') {
-                          sortIO?.onChange({
-                            path,
-                            direction: nextSort as 'asc' | 'desc',
-                          })
-                        }
-                      },
-                    }
+                    value:
+                      sortIO?.value?.path === path
+                        ? sortIO.value?.direction
+                        : 'none',
+                    onChange: (nextSort) => {
+                      if (nextSort === 'none') {
+                        sortIO?.onChange(null)
+                      } else if (path !== 'actions') {
+                        sortIO?.onChange({
+                          path,
+                          direction: nextSort as 'asc' | 'desc',
+                        })
+                      }
+                    },
+                  }
                   : undefined
               }
               showSettingIcon={setting}

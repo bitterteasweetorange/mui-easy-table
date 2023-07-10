@@ -14,9 +14,12 @@ import { EasyPopper } from '../component'
 import { ColumnState } from '../useTable'
 import { useDraggableInPortal } from './useDraggableInPortal'
 
-export type ColumnManageProps<Row extends FieldValues> = {
+export type ColumnManageProps<
+  Row extends FieldValues,
+  Filter extends FieldValues | null = null,
+> = {
   columnState: ColumnState<Row>
-  columns: EasyColumnProps<Row>[]
+  columns: EasyColumnProps<Row, Filter>[]
   /**
    * update column hidden
    */
@@ -29,9 +32,10 @@ export type ColumnManageProps<Row extends FieldValues> = {
   anchorRef: React.RefObject<HTMLButtonElement>
 }
 
-export function ColumnManage<Row extends FieldValues>(
-  props: ColumnManageProps<Row>,
-) {
+export function ColumnManage<
+  Row extends FieldValues,
+  Filter extends FieldValues | null = null,
+>(props: ColumnManageProps<Row, Filter>) {
   const {
     openIO,
     anchorRef,

@@ -3,6 +3,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { Box, BoxProps, IconButton, useTheme } from '@mui/material'
 import { ResizableBox } from 'react-resizable'
 import { UseIOReturn } from 'react-utils-ts'
+import { EasyFilter } from 'src/EasyFilter'
 import { EasyCell } from '../EasyCell'
 import { EasyTableHeadItemSetting } from '../head/EasyTableHeadItemSetting'
 
@@ -154,6 +155,7 @@ function Content(props: EasyHeadCellProps) {
           )}
         </IconButton>
       )}
+      <EasyFilter />
       {showSettingIcon && (
         <EasyTableHeadItemSetting
           onHideColumn={onHideColumn}

@@ -14,13 +14,16 @@ import { ColumnState, UseTableReturn } from './useTable'
 
 export const CHECKBOX_WIDTH = 66
 
-export type EasyTableProps<T extends FieldValues> = {
+export type EasyTableProps<
+  T extends FieldValues,
+  Filter extends FieldValues | null = null,
+> = {
   /**
    * @default undefined
    * */
   selectionMode?: 'single' | 'multiple'
-  useTableReturn: UseTableReturn<T>
-  columns: EasyColumnProps<T>[]
+  useTableReturn: UseTableReturn<T, Filter>
+  columns: EasyColumnProps<T, Filter>[]
   /**
    * height of table
    * @default undefined
@@ -36,7 +39,10 @@ export type EasyTableProps<T extends FieldValues> = {
    * */
   setting?: boolean
 }
-export type EasyColumnProps<T extends FieldValues> = {
+export type EasyColumnProps<
+  T extends FieldValues,
+  Filter extends FieldValues | null = null,
+> = {
   path: EasyPath<T>
   headerName: string
   /**
@@ -50,13 +56,13 @@ export type EasyColumnProps<T extends FieldValues> = {
   /**
    * support date-fns format, money and custom render
    * */
-  render?: EasyTableCellRender<T>
+  render?: EasyTableCellRender<T, Filter>
   /**
    * sum the column value
    * */
   sum?: boolean
 }
-export type EasyTableCellRender<T> =
+export type EasyTableCellRender<T, Filter extends FieldValues | null = null> =
   | 'yyyy-MM-dd'
   | 'yyyy-MM-dd HH:mm:ss'
   | 'money'
@@ -68,9 +74,12 @@ export type EasyTableCellRender<T> =
       val: any,
       row: T,
       index: number,
-      useTableReturn: UseTableReturn<T>,
+      useTableReturn: UseTableReturn<T, Filter>,
     ) => ReactNode)
-export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
+export function EasyTable<
+  T extends FieldValues,
+  Filter extends FieldValues | null = null,
+>(props: EasyTableProps<T, Filter>) {
   const {
     setting,
     isRowEqual,
@@ -90,6 +99,8 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
     updateColumnOrder,
     updateColumnHidden,
     updateColumnWidth,
+    filter,
+    setFilter,
   } = useTableReturn
 
   const {
@@ -264,12 +275,15 @@ export function EasyTable<T extends FieldValues>(props: EasyTableProps<T>) {
   )
 }
 
-function Footer<T extends FieldValues>({
+function Footer<
+  T extends FieldValues,
+  Filter extends FieldValues | null = null,
+>({
   selectionMode,
   data,
   columnState,
   columns,
-}: Pick<EasyTableProps<T>, 'columns' | 'selectionMode'> & {
+}: Pick<EasyTableProps<T, Filter>, 'columns' | 'selectionMode'> & {
   data: T[]
   columnState: ColumnState<T>
 }) {
@@ -323,12 +337,12 @@ function sumColumnValue<T>(data: T[], path: Path<T> | 'actions') {
   }, 0)
 }
 
-function renderCell<T>(
+function renderCell<T, Filter extends FieldValues | null = null>(
   index: number,
   val: unknown,
-  render: EasyTableCellRender<T>,
+  render: EasyTableCellRender<T, Filter>,
   row: T,
-  useTableReturn: UseTableReturn<T>,
+  useTableReturn: UseTableReturn<T, Filter>,
 ) {
   if (typeof render === 'function') {
     return render(val, row, index, useTableReturn)

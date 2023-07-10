@@ -18,8 +18,10 @@ export type MockShape = {
     firstName: string | null
   }
   money: number | null
-  gender: 'female' | 'male'
+  gender: MockGender
 }
+
+export type MockGender = 'female' | 'male'
 
 export const mockData: MockShape[] = new Array(100)
   .fill(null)
@@ -68,7 +70,14 @@ export const defaultColumnState: DefaultColumnItemState<MockShape>[] = [
     width: 150,
   },
 ]
-export const columns: EasyColumnProps<MockShape>[] = [
+
+export type MockFilter = {
+  // firstname / lastname
+  search?: string
+  gender?: MockGender
+}
+
+export const columns: EasyColumnProps<MockShape, MockFilter>[] = [
   {
     path: 'id',
     headerName: 'ID',
@@ -134,7 +143,7 @@ function UpdateRow({
   updateRecord,
   disabled,
 }: {
-  updateRecord: UseTableReturn<MockShape>['handleData']['update']
+  updateRecord: UseTableReturn<MockShape, MockFilter>['handleData']['update']
   row: MockShape
   index: number
   disabled?: boolean
@@ -171,7 +180,7 @@ function DeleteRow({
   index,
   deleteRecord,
 }: {
-  deleteRecord: UseTableReturn<MockShape>['handleData']['delete']
+  deleteRecord: UseTableReturn<MockShape, MockFilter>['handleData']['delete']
   index: number
 }) {
   const [loading, setLoading] = React.useState(false)

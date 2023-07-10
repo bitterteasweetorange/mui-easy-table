@@ -1,13 +1,15 @@
 import { get, isEqual } from 'lodash'
-import { useCallback, useState } from 'react'
-import { Path } from 'react-hook-form'
+import { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import { FieldValues, Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { DEFAULT_WIDTH, EasyPath } from './EasyHead'
 
 type ColumnItemState<Row> = Required<DefaultColumnItemState<Row>>
 export type ColumnState<Row> = ColumnItemState<Row>[]
-export type UseTableReturn<Row> = {
+export type UseTableReturn<Row, Filter extends FieldValues | null = null> = {
+  filter: Filter
+  setFilter: Dispatch<SetStateAction<Filter>>
   data: Row[]
   handleData: {
     add: (row: Row) => void
@@ -61,11 +63,11 @@ export type DefaultColumnItemState<Row> = {
    * */
   hidden?: boolean
 }
-// eslint-disable-next-line
-export type UseTableProps<Row, _Filter> = {
+export type UseTableProps<Row, Filter extends FieldValues | null = null> = {
   rawData: Row[]
   defaultSelected?: Row[]
   defaultColumnState: DefaultColumnItemState<Row>[]
+  defaultFilter?: Filter
 } & All<Row>
 
 type All<Row> = {
@@ -76,10 +78,16 @@ type All<Row> = {
   getRowDisabled?: (row: Row) => boolean
 }
 
-export function useTable<Row, Filter>(
+export function useTable<Row, Filter extends FieldValues | null = null>(
   props: UseTableProps<Row, Filter>,
-): UseTableReturn<Row> {
-  const { defaultSelected, defaultColumnState, rawData, ...all } = props
+): UseTableReturn<Row, Filter> {
+  const {
+    defaultFilter = null,
+    defaultSelected,
+    defaultColumnState,
+    rawData,
+    ...all
+  } = props
   const { rowKeyPath, getRowDisabled } = all
   const selectedIO = useIO<Row[]>(defaultSelected ?? [])
   const [checkAll, setCheckAll] = useState(
@@ -186,7 +194,7 @@ export function useTable<Row, Filter>(
     }))
   })
 
-  const updateColumnOrder: UseTableReturn<Row>['updateColumnOrder'] =
+  const updateColumnOrder: UseTableReturn<Row, Filter>['updateColumnOrder'] =
     useCallback((startIndex, endIndex) => {
       setColumnState((pre) => {
         const result = Array.from(pre)
@@ -197,7 +205,7 @@ export function useTable<Row, Filter>(
       })
     }, [])
 
-  const updateColumnHidden: UseTableReturn<Row>['updateColumnHidden'] =
+  const updateColumnHidden: UseTableReturn<Row, Filter>['updateColumnHidden'] =
     useCallback((path, nextHidden) => {
       setColumnState((pre) => {
         const result = Array.from(pre)
@@ -208,7 +216,7 @@ export function useTable<Row, Filter>(
       })
     }, [])
 
-  const updateColumnWidth: UseTableReturn<Row>['updateColumnWidth'] =
+  const updateColumnWidth: UseTableReturn<Row, Filter>['updateColumnWidth'] =
     useCallback((path, nextWidth) => {
       setColumnState((pre) => {
         const result = Array.from(pre)
@@ -219,8 +227,14 @@ export function useTable<Row, Filter>(
       })
     }, [])
 
+  const [filter, setFilter] = useState<Filter>(
+    defaultFilter as unknown as Filter,
+  )
+
   return {
     ...all,
+    filter,
+    setFilter,
     data: dataIO.value,
     selected: selectedIO.value,
     columnState,

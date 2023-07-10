@@ -4,9 +4,15 @@ import type { Meta } from '@storybook/react'
 import React from 'react'
 import { useIO } from 'react-utils-ts'
 import { ColumnManage } from '../ColumnManage'
-import { EasyTable } from '../EasyTable'
+import { EasyColumnProps, EasyTable } from '../EasyTable'
 import { useTable } from '../useTable'
-import { MockShape, columns, defaultColumnState, mockData } from './mock'
+import {
+  MockFilter,
+  MockShape,
+  columns,
+  defaultColumnState,
+  mockData,
+} from './mock'
 
 const meta = {
   title: 'EasyTable',
@@ -16,18 +22,21 @@ const meta = {
 export default meta
 
 export const Defalut = () => {
-  const useTableReturn = useTable<MockShape, Record<string, any>>({
+  const useTableReturn = useTable<MockShape, MockFilter>({
     rawData: mockData,
     rowKeyPath: 'id',
     defaultSelected: [mockData[0], mockData[2]],
     getRowDisabled: (row) => row.id === 2 || row.id === 3,
     defaultColumnState,
+    defaultFilter: {
+      gender: 'male',
+    },
   })
 
-  const { selected } = useTableReturn
+  const { filter, selected } = useTableReturn
   return (
     <>
-      <EasyTable<MockShape>
+      <EasyTable<MockShape, MockFilter>
         setting
         height={`calc(100vh - 120px)`}
         selectionMode="multiple"
@@ -35,6 +44,7 @@ export const Defalut = () => {
         columns={columns}
         isRowEqual={(a, b) => a.id === b.id}
       />
+      {JSON.stringify(filter)}
       {selected.length} selected:
       {selected.map((user) => user.name.firstName).join(', ')}
     </>
@@ -42,7 +52,7 @@ export const Defalut = () => {
 }
 
 export const SingleSelected = () => {
-  const useTableReturn = useTable<MockShape, Record<string, any>>({
+  const useTableReturn = useTable<MockShape>({
     rowKeyPath: 'id',
     rawData: mockData,
     defaultSelected: [mockData[0]],
@@ -53,7 +63,7 @@ export const SingleSelected = () => {
     <EasyTable<MockShape>
       height="calc(100vh - 34px)"
       useTableReturn={useTableReturn}
-      columns={columns}
+      columns={columns as unknown as EasyColumnProps<MockShape>[]}
       selectionMode="single"
     />
   )
@@ -63,7 +73,7 @@ export const CustomColumnManage = () => {
   const openIO = useIO(false)
   const anchorRef = React.useRef<HTMLButtonElement>(null)
 
-  const useTableReturn = useTable<MockShape, Record<string, any>>({
+  const useTableReturn = useTable<MockShape>({
     rawData: mockData,
     rowKeyPath: 'id',
     defaultSelected: [mockData[0], mockData[2]],
@@ -97,7 +107,7 @@ export const CustomColumnManage = () => {
         height={`calc(100vh - 120px)`}
         selectionMode="multiple"
         useTableReturn={useTableReturn}
-        columns={columns}
+        columns={columns as unknown as EasyColumnProps<MockShape>[]}
         isRowEqual={(a, b) => a.id === b.id}
       />
     </>
