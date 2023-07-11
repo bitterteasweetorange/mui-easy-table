@@ -8,7 +8,7 @@ import {
 import { LoadingButton } from '@mui/lab'
 import { IconButton, Tooltip } from '@mui/material'
 import React from 'react'
-import { EasyColumnProps } from '../EasyTable'
+import { EasyColumnProps } from '.'
 import { DefaultColumnItemState, UseTableReturn } from '../useTable'
 
 export type MockShape = {

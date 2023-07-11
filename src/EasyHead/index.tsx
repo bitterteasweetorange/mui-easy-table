@@ -140,21 +140,21 @@ export function EasyHead<
               sortIO={
                 sortable
                   ? {
-                    value:
-                      sortIO?.value?.path === path
-                        ? sortIO.value?.direction
-                        : 'none',
-                    onChange: (nextSort) => {
-                      if (nextSort === 'none') {
-                        sortIO?.onChange(null)
-                      } else if (path !== 'actions') {
-                        sortIO?.onChange({
-                          path,
-                          direction: nextSort as 'asc' | 'desc',
-                        })
-                      }
-                    },
-                  }
+                      value:
+                        sortIO?.value?.path === path
+                          ? sortIO.value?.direction
+                          : 'none',
+                      onChange: (nextSort) => {
+                        if (nextSort === 'none') {
+                          sortIO?.onChange(null)
+                        } else if (path !== 'actions') {
+                          sortIO?.onChange({
+                            path,
+                            direction: nextSort as 'asc' | 'desc',
+                          })
+                        }
+                      },
+                    }
                   : undefined
               }
               showSettingIcon={setting}

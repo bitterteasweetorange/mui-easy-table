@@ -3,8 +3,8 @@ import { Button } from '@mui/material'
 import type { Meta } from '@storybook/react'
 import React from 'react'
 import { useIO } from 'react-utils-ts'
+import { EasyColumnProps, EasyTable } from '.'
 import { ColumnManage } from '../ColumnManage'
-import { EasyColumnProps, EasyTable } from '../EasyTable'
 import { useTable } from '../useTable'
 import {
   MockFilter,

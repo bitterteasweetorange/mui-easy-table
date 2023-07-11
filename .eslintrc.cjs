@@ -18,5 +18,14 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['react-refresh', '@typescript-eslint', 'react'],
-  rules: {},
+  rules: {
+    'no-console': 'warn',
+    'no-debugger': 'warn',
+    'no-empty': 'warn',
+    'default-case': 'warn',
+    eqeqeq: 'error',
+    'no-return-assign': 'error',
+    'no-useless-return': 'warn',
+    'max-depth': 'warn',
+  },
 }
