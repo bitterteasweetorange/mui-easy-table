@@ -1,5 +1,12 @@
+import { log } from 'console'
 import { get, isEqual } from 'lodash'
-import { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -139,12 +146,33 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
   useDeepCompareEffect(() => {
     dataIO.onChange(rawData)
   }, [rawData])
+
   const addRow = useCallback(
     (row: Row) => {
       dataIO.onChange(dataIO.value.concat([row]))
     },
     [dataIO],
   )
+
+  const [filter, setFilter] = useState<Filter>(
+    defaultFilter as unknown as Filter,
+  )
+
+  useEffect(() => {
+    dataIO.onChange((pre) => {
+      const res = pre.filter((row) => {
+        const x = Object.entries(filter ?? {})
+        // TODO
+        const value = x?.[0]?.[1]
+        const key = x?.[0]?.[0]
+        const item = get(row, key)
+        return item === value
+      })
+      return res
+    })
+    // FIXME
+  }, [filter])
+
   const deleteRow = useCallback(
     (index: number) => {
       const deletedRow = dataIO.value[index]
@@ -226,10 +254,6 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
         return result
       })
     }, [])
-
-  const [filter, setFilter] = useState<Filter>(
-    defaultFilter as unknown as Filter,
-  )
 
   return {
     ...all,
