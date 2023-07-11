@@ -19,7 +19,7 @@ export type EasyFilterSetting<T> = {
 export type EasyFilterProsp<T> = {
   value: T[]
   onChange: Dispatch<SetStateAction<T[]>>
-  filterSetting?: EasyFilterSetting<T>
+  filterSetting: EasyFilterSetting<T>
 }
 export function EasyFilter<T>(props: EasyFilterProsp<T>) {
   const openIO = useIO(false)
@@ -30,20 +30,15 @@ export function EasyFilter<T>(props: EasyFilterProsp<T>) {
   return (
     <>
       <IconButton
+        color={value.length === 0 ? 'default' : 'success'}
         ref={anchorRef}
         onClick={() => {
           openIO.onChange((pre) => !pre)
         }}
       >
-        <FilterAlt
-          fontSize="small"
-          color="disabled"
-        />
+        <FilterAlt fontSize="small" />
       </IconButton>
-      <EasyPopper
-        openIO={openIO}
-        anchorRef={anchorRef}
-      >
+      <EasyPopper openIO={openIO} anchorRef={anchorRef}>
         {type === 'multiSelect' || type === 'singleSelect' ? (
           <>
             {options.map((op, index) => {

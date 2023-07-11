@@ -74,12 +74,12 @@ export type EasyTableCellRender<T, Filter extends FieldValues | null = null> =
    * index: row index
    */
   | ((
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    val: any,
-    row: T,
-    index: number,
-    useTableReturn: UseTableReturn<T, Filter>,
-  ) => ReactNode)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      val: any,
+      row: T,
+      index: number,
+      useTableReturn: UseTableReturn<T, Filter>,
+    ) => ReactNode)
 export function EasyTable<
   T extends FieldValues,
   Filter extends FieldValues | null = null,
@@ -170,15 +170,15 @@ export function EasyTable<
           checkedIO={
             selectionMode === 'multiple'
               ? {
-                value: selected.length === data.length,
-                onChange: () => {
-                  if (!checkAll) {
-                    addAllSelected()
-                  } else {
-                    deleteAllSelected()
-                  }
-                },
-              }
+                  value: selected.length === data.length,
+                  onChange: () => {
+                    if (!checkAll) {
+                      addAllSelected()
+                    } else {
+                      deleteAllSelected()
+                    }
+                  },
+                }
               : undefined
           }
         />
@@ -250,20 +250,20 @@ export function EasyTable<
                     sx={
                       colIndex === columns.length - 1
                         ? {
-                          position: 'sticky',
-                          right: 0,
-                          zIndex: 1,
-                          boxShadow:
-                            '0px 3px 14px 2px rgba(26, 59, 164, 0.06)',
-                        }
+                            position: 'sticky',
+                            right: 0,
+                            zIndex: 1,
+                            boxShadow:
+                              '0px 3px 14px 2px rgba(26, 59, 164, 0.06)',
+                          }
                         : undefined
                     }
                   >
                     {render
                       ? renderCell(index, value, render, row, useTableReturn)
                       : value === null
-                        ? ''
-                        : String(value)}
+                      ? ''
+                      : String(value)}
                   </EasyCell>
                 )
               })}

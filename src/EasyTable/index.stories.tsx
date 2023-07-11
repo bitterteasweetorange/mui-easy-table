@@ -23,7 +23,7 @@ export default meta
 
 export const Defalut = () => {
   const useTableReturn = useTable<MockShape, MockFilter>({
-    rawData: mockData,
+    defaultRawData: mockData,
     rowKeyPath: 'id',
     defaultSelected: [mockData[0], mockData[2]],
     getRowDisabled: (row) => row.id === 2 || row.id === 3,
@@ -54,7 +54,7 @@ export const Defalut = () => {
 export const SingleSelected = () => {
   const useTableReturn = useTable<MockShape>({
     rowKeyPath: 'id',
-    rawData: mockData,
+    defaultRawData: mockData,
     defaultSelected: [mockData[0]],
     defaultColumnState,
   })
@@ -74,7 +74,7 @@ export const CustomColumnManage = () => {
   const anchorRef = React.useRef<HTMLButtonElement>(null)
 
   const useTableReturn = useTable<MockShape>({
-    rawData: mockData,
+    defaultRawData: mockData,
     rowKeyPath: 'id',
     defaultSelected: [mockData[0], mockData[2]],
     getRowDisabled: (row) => row.id === 2 || row.id === 3,

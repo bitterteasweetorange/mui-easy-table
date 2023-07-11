@@ -1,8 +1,7 @@
-import { get, isEqual } from 'lodash'
-import { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import { get, isEqual, isNil } from 'lodash'
+import { Dispatch, SetStateAction, useCallback, useMemo, useState } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
-import useDeepCompareEffect from 'use-deep-compare-effect'
 import { DEFAULT_WIDTH, EasyPath } from './EasyHead'
 
 type ColumnItemState<Row> = Required<DefaultColumnItemState<Row>>
@@ -10,7 +9,9 @@ export type ColumnState<Row> = ColumnItemState<Row>[]
 export type UseTableReturn<Row, Filter extends FieldValues | null = null> = {
   filter: Filter
   setFilter: Dispatch<SetStateAction<Filter>>
+  // visibale data
   data: Row[]
+  resetRawData: (nextData: Row[]) => void
   handleData: {
     add: (row: Row) => void
     delete: (index: number) => void
@@ -64,7 +65,7 @@ export type DefaultColumnItemState<Row> = {
   hidden?: boolean
 }
 export type UseTableProps<Row, Filter extends FieldValues | null = null> = {
-  rawData: Row[]
+  defaultRawData: Row[]
   defaultSelected?: Row[]
   defaultColumnState: DefaultColumnItemState<Row>[]
   defaultFilter?: Filter
@@ -85,7 +86,7 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
     defaultFilter = null,
     defaultSelected,
     defaultColumnState,
-    rawData,
+    defaultRawData: rawData,
     ...all
   } = props
   const { rowKeyPath, getRowDisabled } = all
@@ -134,20 +135,36 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
     [selectedIO],
   )
 
-  const dataIO = useIO(rawData)
+  const rawDataIO = useIO(rawData)
 
-  useDeepCompareEffect(() => {
-    dataIO.onChange(rawData)
-  }, [rawData])
   const addRow = useCallback(
     (row: Row) => {
-      dataIO.onChange(dataIO.value.concat([row]))
+      rawDataIO.onChange((pre) => [...pre, row])
     },
-    [dataIO],
+    [rawDataIO],
   )
+
+  const [filter, setFilter] = useState<Filter>(
+    defaultFilter as unknown as Filter,
+  )
+
+  const data: Row[] = useMemo(() => {
+    const res = rawDataIO.value.filter((row) => {
+      const x = Object.entries(filter ?? {})
+      // TODO: support more than one filter
+      const value = x?.[0]?.[1]
+      // no filter
+      if (isNil(value)) return true
+      const key = x?.[0]?.[0]
+      const item = get(row, key)
+      return item === value
+    })
+    return res
+  }, [filter, rawDataIO.value])
+
   const deleteRow = useCallback(
     (index: number) => {
-      const deletedRow = dataIO.value[index]
+      const deletedRow = rawDataIO.value[index]
       // if delete selected row
       if (
         selectedIO.value
@@ -160,9 +177,9 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
           ),
         )
       }
-      dataIO.onChange(dataIO.value.filter((_, i) => i !== index))
+      rawDataIO.onChange(rawDataIO.value.filter((_, i) => i !== index))
     },
-    [dataIO, rowKeyPath, selectedIO],
+    [rawDataIO, rowKeyPath, selectedIO],
   )
   const updateRow = useCallback(
     (index: number, row: Row) => {
@@ -181,9 +198,9 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
           }),
         )
       }
-      dataIO.onChange(dataIO.value.map((r, i) => (i === index ? row : r)))
+      rawDataIO.onChange(rawDataIO.value.map((r, i) => (i === index ? row : r)))
     },
-    [dataIO, rowKeyPath, selectedIO],
+    [rawDataIO, rowKeyPath, selectedIO],
   )
 
   const [columnState, setColumnState] = useState<ColumnState<Row>>(() => {
@@ -227,15 +244,12 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
       })
     }, [])
 
-  const [filter, setFilter] = useState<Filter>(
-    defaultFilter as unknown as Filter,
-  )
-
   return {
     ...all,
+    resetRawData: rawDataIO.onChange,
     filter,
     setFilter,
-    data: dataIO.value,
+    data,
     selected: selectedIO.value,
     columnState,
     updateColumnOrder,
