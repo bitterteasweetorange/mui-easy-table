@@ -1,4 +1,5 @@
 import { Box, Checkbox } from '@mui/material'
+import { Dispatch, SetStateAction } from 'react'
 import { FieldValues, Path, get } from 'react-hook-form'
 import { UseIOReturn } from 'react-utils-ts'
 import { EasyCell } from '../EasyCell'
@@ -47,6 +48,8 @@ export type EasyHeadProps<
    * include hide column
    * */
   setting?: boolean
+  filter?: Filter
+  setFilter?: Dispatch<SetStateAction<Filter>>
 }
 
 export const DEFAULT_WIDTH = 100
@@ -79,6 +82,8 @@ export function EasyHead<
     columnState,
     updateColumnHidden,
     updateColumnWidth,
+    filter,
+    setFilter,
   } = props
   return (
     <Box
@@ -118,6 +123,8 @@ export function EasyHead<
           const { sortable, headerName, align } = column
           return (
             <EasyHeadCell
+              filter={filter}
+              setFilter={setFilter}
               openIO={openIO}
               anchorRef={colIndex === 0 ? anchorRef : undefined}
               key={path}
@@ -140,21 +147,21 @@ export function EasyHead<
               sortIO={
                 sortable
                   ? {
-                      value:
-                        sortIO?.value?.path === path
-                          ? sortIO.value?.direction
-                          : 'none',
-                      onChange: (nextSort) => {
-                        if (nextSort === 'none') {
-                          sortIO?.onChange(null)
-                        } else if (path !== 'actions') {
-                          sortIO?.onChange({
-                            path,
-                            direction: nextSort as 'asc' | 'desc',
-                          })
-                        }
-                      },
-                    }
+                    value:
+                      sortIO?.value?.path === path
+                        ? sortIO.value?.direction
+                        : 'none',
+                    onChange: (nextSort) => {
+                      if (nextSort === 'none') {
+                        sortIO?.onChange(null)
+                      } else if (path !== 'actions') {
+                        sortIO?.onChange({
+                          path,
+                          direction: nextSort as 'asc' | 'desc',
+                        })
+                      }
+                    },
+                  }
                   : undefined
               }
               showSettingIcon={setting}

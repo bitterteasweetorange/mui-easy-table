@@ -1,13 +1,18 @@
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import { Box, BoxProps, IconButton, useTheme } from '@mui/material'
+import { Dispatch, SetStateAction } from 'react'
+import { FieldValues } from 'react-hook-form'
 import { ResizableBox } from 'react-resizable'
 import { UseIOReturn } from 'react-utils-ts'
 import { EasyFilter } from 'src/EasyFilter'
 import { EasyCell } from '../EasyCell'
 import { EasyTableHeadItemSetting } from '../head/EasyTableHeadItemSetting'
 
-export interface EasyHeadCellProps extends Omit<BoxProps, 'width'> {
+export type EasyHeadCellProps<Filter extends FieldValues | null> = Omit<
+  BoxProps,
+  'width'
+> & {
   width: number
   /**
    * resize
@@ -25,17 +30,19 @@ export interface EasyHeadCellProps extends Omit<BoxProps, 'width'> {
   onHideColumn?: () => void
   openIO: UseIOReturn<boolean>
   anchorRef?: React.RefObject<HTMLLIElement>
+  filter?: Filter
+  setFilter?: Dispatch<SetStateAction<Filter>>
 }
 
 export type EasyHeadCellSort = 'asc' | 'desc' | 'none'
 
 export const HEAD_HEIGHT = 56
-export function EasyHeadCell({
+export function EasyHeadCell<Filter extends FieldValues | null>({
   width,
   onWidthChange,
   sx,
   ...props
-}: EasyHeadCellProps) {
+}: EasyHeadCellProps<Filter>) {
   const { palette } = useTheme()
   return onWidthChange ? (
     <ResizableBox
@@ -76,14 +83,22 @@ export function EasyHeadCell({
         </Box>
       }
     >
-      <Content {...props} width={width} />
+      <Content<Filter>
+        {...props}
+        width={width}
+      />
     </ResizableBox>
   ) : (
-    <Content {...props} width={width} />
+    <Content<Filter>
+      {...props}
+      width={width}
+    />
   )
 }
 
-function Content(props: EasyHeadCellProps) {
+function Content<Filter extends FieldValues | null>(
+  props: EasyHeadCellProps<Filter>,
+) {
   const {
     showSettingIcon,
     sortIO,
@@ -92,6 +107,8 @@ function Content(props: EasyHeadCellProps) {
     onHideColumn,
     openIO,
     anchorRef,
+    filter,
+    setFilter,
     ...restProps
   } = props
   return (
@@ -148,14 +165,23 @@ function Content(props: EasyHeadCellProps) {
             />
           )}
           {sortIO.value === 'asc' && (
-            <ArrowUpwardIcon fontSize="small" color="primary" />
+            <ArrowUpwardIcon
+              fontSize="small"
+              color="primary"
+            />
           )}
           {sortIO.value === 'desc' && (
-            <ArrowDownwardIcon fontSize="small" color="primary" />
+            <ArrowDownwardIcon
+              fontSize="small"
+              color="primary"
+            />
           )}
         </IconButton>
       )}
-      <EasyFilter />
+      <EasyFilter
+        filter={filter}
+        setFilter={setFilter}
+      />
       {showSettingIcon && (
         <EasyTableHeadItemSetting
           onHideColumn={onHideColumn}

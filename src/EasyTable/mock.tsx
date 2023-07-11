@@ -1,9 +1,9 @@
-import { Sex, faker } from '@faker-js/faker'
+import { faker } from '@faker-js/faker'
 import {
+  CheckOutlined,
+  ClearRounded,
   DeleteOutline,
   EditOutlined,
-  FemaleOutlined,
-  MaleOutlined,
 } from '@mui/icons-material'
 import { LoadingButton } from '@mui/lab'
 import { IconButton, Tooltip } from '@mui/material'
@@ -18,7 +18,8 @@ export type MockShape = {
     firstName: string | null
   }
   money: number | null
-  gender: MockGender
+  job: string
+  isAdmin: boolean
 }
 
 export type MockGender = 'female' | 'male'
@@ -37,7 +38,8 @@ export const mockData: MockShape[] = new Array(100)
         min: 1000,
         max: 20000,
       }),
-      gender: faker.person.sexType(),
+      isAdmin: faker.person.firstName().includes('a') && index % 2 === 0,
+      job: faker.person.jobType(),
     }
   })
 
@@ -50,7 +52,7 @@ export const defaultColumnState: DefaultColumnItemState<MockShape>[] = [
     width: 200,
   },
   {
-    path: 'gender',
+    path: 'isAdmin',
   },
   {
     path: 'money',
@@ -59,6 +61,9 @@ export const defaultColumnState: DefaultColumnItemState<MockShape>[] = [
   {
     path: 'name',
     width: 800,
+  },
+  {
+    path: 'job',
   },
   {
     path: 'name.lastName',
@@ -87,15 +92,28 @@ export const columns: EasyColumnProps<MockShape, MockFilter>[] = [
     headerName: 'FirstName',
   },
   {
-    path: 'gender',
-    headerName: 'Gender',
-    render: (val: Sex) => {
-      return val === 'female' ? (
-        <FemaleOutlined color="success" />
+    path: 'isAdmin',
+    headerName: 'is admin',
+    render: (val: boolean) =>
+      val ? (
+        <CheckOutlined color="success"></CheckOutlined>
       ) : (
-        <MaleOutlined color="warning" />
-      )
+        <ClearRounded color="error" />
+      ),
+    filterSetting: {
+      type: 'singleSelect',
+      options: [true, false],
+      render: (val: boolean) =>
+        val ? (
+          <CheckOutlined color="success"></CheckOutlined>
+        ) : (
+          <ClearRounded color="error" />
+        ),
     },
+  },
+  {
+    path: 'job',
+    headerName: 'Job',
   },
   {
     path: 'money',

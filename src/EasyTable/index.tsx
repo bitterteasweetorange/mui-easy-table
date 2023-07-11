@@ -61,21 +61,26 @@ export type EasyColumnProps<
    * sum the column value
    * */
   sum?: boolean
-  filter?: {
-    // TODO
-    type:
-    | 'select'
-    | 'multiSelect'
-    | 'text'
-    | 'date'
-    | 'dateRange'
-    | 'number'
-    | 'numberRange'
-    | 'money'
-    | 'moneyRange'
-    | 'custom'
-    options: []
-  }
+  filterSetting?: FilterConfig
+}
+
+export type FilterConfig = {
+  // TODO
+  type:
+  | 'singleSelect'
+  | 'multiSelect'
+  | 'text'
+  | 'date'
+  | 'dateRange'
+  | 'number'
+  | 'numberRange'
+  | 'money'
+  | 'moneyRange'
+  | 'custom'
+  // eslint-disable-next-line
+  options: any[]
+  // eslint-disable-next-line
+  render?: (value: any) => ReactNode
 }
 export type EasyTableCellRender<T, Filter extends FieldValues | null = null> =
   | 'yyyy-MM-dd'
@@ -167,6 +172,8 @@ export function EasyTable<
         }}
       >
         <EasyHead
+          filter={filter}
+          setFilter={setFilter}
           openIO={openIO}
           anchorRef={anchorRef}
           setting={setting}
