@@ -1,4 +1,5 @@
 import { Box, Checkbox } from '@mui/material'
+import { isNil } from 'lodash'
 import { Dispatch, SetStateAction } from 'react'
 import { FieldValues, Path, get } from 'react-hook-form'
 import { UseIOReturn } from 'react-utils-ts'
@@ -120,11 +121,28 @@ export function EasyHead<
           if (hidden) return null
           const column = columns.find((col) => col.path === path)
           if (!column) return null
-          const { sortable, headerName, align } = column
+          const { sortable, headerName, filterSetting, align } = column
+          //eslint-disable-next-line
+          const filterValue = get(filter, path) as any
           return (
             <EasyHeadCell
-              filter={filter}
-              setFilter={setFilter}
+              value={
+                filterSetting?.type === 'multiSelect'
+                  ? isNil(filterValue)
+                    ? []
+                    : filterValue
+                  : isNil(filterValue)
+                    ? []
+                    : [filterValue]
+              }
+              //eslint-disable-next-line
+              onChange={(v: any) => {
+                setFilter?.((pre) => ({
+                  ...pre,
+                  [path]: filterSetting?.type === 'multiSelect' ? v : v?.[0],
+                }))
+              }}
+              filterSetting={filterSetting}
               openIO={openIO}
               anchorRef={colIndex === 0 ? anchorRef : undefined}
               key={path}

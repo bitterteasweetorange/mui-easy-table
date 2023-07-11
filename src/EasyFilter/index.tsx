@@ -1,4 +1,4 @@
-import { ContentCut, FilterAlt } from '@mui/icons-material'
+import { FilterAlt } from '@mui/icons-material'
 import {
   Checkbox,
   IconButton,
@@ -6,21 +6,27 @@ import {
   ListItemText,
   MenuItem,
 } from '@mui/material'
-import { Dispatch, SetStateAction, useRef } from 'react'
+import { Dispatch, ReactNode, SetStateAction, useRef } from 'react'
 import { useIO } from 'react-utils-ts'
-import { FilterConfig } from 'src/EasyTable'
 import { EasyPopper } from 'src/component'
 
-type EasyFilterProsp<T> = {
+export type EasyFilterSetting<T> = {
+  type: 'singleSelect' | 'multiSelect'
+  options: T[]
+  renderOption?: (value: T) => ReactNode
+}
+
+export type EasyFilterProsp<T> = {
   value: T[]
   onChange: Dispatch<SetStateAction<T[]>>
-  filterSetting: FilterConfig
+  filterSetting?: EasyFilterSetting<T>
 }
 export function EasyFilter<T>(props: EasyFilterProsp<T>) {
   const openIO = useIO(false)
   const anchorRef = useRef<HTMLButtonElement | null>(null)
   const { filterSetting, value, onChange } = props
-  const { type, options, render } = filterSetting
+  if (!filterSetting) return null
+  const { type, options, renderOption } = filterSetting
   return (
     <>
       <IconButton
@@ -41,7 +47,7 @@ export function EasyFilter<T>(props: EasyFilterProsp<T>) {
         {type === 'multiSelect' || type === 'singleSelect' ? (
           <>
             {options.map((op, index) => {
-              const checked = value.includes(op)
+              const checked = value?.includes?.(op)
               return (
                 <MenuItem
                   key={index}
@@ -66,7 +72,9 @@ export function EasyFilter<T>(props: EasyFilterProsp<T>) {
                       <Checkbox checked={checked} />
                     </ListItemIcon>
                   )}
-                  <ListItemText> {render?.(op) ?? op}</ListItemText>
+                  <ListItemText>
+                    {renderOption?.(op) ?? JSON.stringify(op)}
+                  </ListItemText>
                 </MenuItem>
               )
             })}

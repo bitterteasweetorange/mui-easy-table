@@ -29,7 +29,7 @@ export const Defalut = () => {
     getRowDisabled: (row) => row.id === 2 || row.id === 3,
     defaultColumnState,
     defaultFilter: {
-      gender: 'male',
+      isAdmin: true,
     },
   })
 

@@ -77,9 +77,7 @@ export const defaultColumnState: DefaultColumnItemState<MockShape>[] = [
 ]
 
 export type MockFilter = {
-  // firstname / lastname
-  search?: string
-  gender?: MockGender
+  isAdmin?: boolean
 }
 
 export const columns: EasyColumnProps<MockShape, MockFilter>[] = [
@@ -103,12 +101,6 @@ export const columns: EasyColumnProps<MockShape, MockFilter>[] = [
     filterSetting: {
       type: 'singleSelect',
       options: [true, false],
-      render: (val: boolean) =>
-        val ? (
-          <CheckOutlined color="success"></CheckOutlined>
-        ) : (
-          <ClearRounded color="error" />
-        ),
     },
   },
   {

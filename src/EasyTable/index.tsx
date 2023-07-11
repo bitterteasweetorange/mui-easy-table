@@ -4,6 +4,7 @@ import { get } from 'lodash'
 import { ReactNode, RefObject, useMemo, useRef } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
+import { EasyFilterSetting } from 'src/EasyFilter'
 import { ColumnManage } from '../ColumnManage'
 import { BODY_HEIGHT, EasyCell } from '../EasyCell'
 import { EasyHead, EasyHeadSortProps, EasyPath } from '../EasyHead'
@@ -61,27 +62,10 @@ export type EasyColumnProps<
    * sum the column value
    * */
   sum?: boolean
-  filterSetting?: FilterConfig
+  // eslint-disable-next-line
+  filterSetting?: EasyFilterSetting<any>
 }
 
-export type FilterConfig = {
-  // TODO
-  type:
-  | 'singleSelect'
-  | 'multiSelect'
-  | 'text'
-  | 'date'
-  | 'dateRange'
-  | 'number'
-  | 'numberRange'
-  | 'money'
-  | 'moneyRange'
-  | 'custom'
-  // eslint-disable-next-line
-  options: any[]
-  // eslint-disable-next-line
-  render?: (value: any) => ReactNode
-}
 export type EasyTableCellRender<T, Filter extends FieldValues | null = null> =
   | 'yyyy-MM-dd'
   | 'yyyy-MM-dd HH:mm:ss'

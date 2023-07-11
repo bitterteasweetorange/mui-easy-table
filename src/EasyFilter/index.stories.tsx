@@ -19,7 +19,7 @@ export const Boolean = () => {
       filterSetting={{
         type: 'singleSelect',
         options: [true, false],
-        render: (val: boolean) =>
+        renderOption: (val: boolean) =>
           val ? (
             <CheckOutlined color="success"></CheckOutlined>
           ) : (
