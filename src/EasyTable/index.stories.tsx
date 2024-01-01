@@ -45,7 +45,6 @@ export const Defalut = () => {
         isRowEqual={(a, b) => a.id === b.id}
       />
       {JSON.stringify(filter)}
-      {selected.length} selected:
       {selected.map((user) => user.name.firstName).join(', ')}
     </>
   )
@@ -86,6 +85,7 @@ export const CustomColumnManage = () => {
 
   return (
     <>
+      {m() + ''}
       <Button
         variant={hideColumnsLength ? 'contained' : 'outlined'}
         onClick={() => {
@@ -112,4 +112,11 @@ export const CustomColumnManage = () => {
       />
     </>
   )
+}
+
+const x = [1, 2]
+function m() {
+  x.forEach((p) => {
+    if (p === 2) return true
+  })
 }

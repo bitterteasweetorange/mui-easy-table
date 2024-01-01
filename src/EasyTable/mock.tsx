@@ -20,6 +20,7 @@ export type MockShape = {
   money: number | null
   job: string
   isAdmin: boolean
+  group: 'ONE' | 'TWO' | 'THREE'
 }
 
 export type MockGender = 'female' | 'male'
@@ -34,12 +35,16 @@ export const mockData: MockShape[] = new Array(100)
         lastName: faker.person.lastName(),
         firstName: faker.person.firstName(),
       },
-      money: faker.number.int({
-        min: 1000,
-        max: 20000,
-      }),
+      money:
+        index % 5 === 0
+          ? null
+          : faker.number.int({
+              min: 1000,
+              max: 20000,
+            }),
       isAdmin: faker.person.firstName().includes('a') && index % 2 === 0,
       job: faker.person.jobType(),
+      group: index % 3 === 0 ? 'ONE' : index % 3 === 1 ? 'TWO' : 'THREE',
     }
   })
 
@@ -64,6 +69,9 @@ export const defaultColumnState: DefaultColumnItemState<MockShape>[] = [
   },
   {
     path: 'job',
+  },
+  {
+    path: 'group',
   },
   {
     path: 'name.lastName',
@@ -100,7 +108,16 @@ export const columns: EasyColumnProps<MockShape, MockFilter>[] = [
       ),
     filterSetting: {
       type: 'singleSelect',
-      options: [true, false],
+      options: [
+        {
+          value: true,
+          label: <CheckOutlined color="success"></CheckOutlined>,
+        },
+        {
+          value: false,
+          label: <ClearRounded color="error" />,
+        },
+      ],
     },
   },
   {
@@ -124,6 +141,18 @@ export const columns: EasyColumnProps<MockShape, MockFilter>[] = [
   {
     path: 'name.lastName',
     headerName: 'LastName',
+  },
+  {
+    path: 'group',
+    headerName: 'Group',
+    filterSetting: {
+      type: 'multiSelect',
+      options: [
+        { label: 'One', value: 'ONE' },
+        { label: 'TWO', value: 'TWO' },
+        { label: 'THREE', value: 'THREE' },
+      ],
+    },
   },
   {
     path: 'actions',

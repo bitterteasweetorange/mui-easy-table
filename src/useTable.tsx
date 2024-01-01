@@ -149,15 +149,23 @@ export function useTable<Row, Filter extends FieldValues | null = null>(
   )
 
   const data: Row[] = useMemo(() => {
+    if (isNil(filter)) return rawDataIO.value
     const res = rawDataIO.value.filter((row) => {
-      const x = Object.entries(filter ?? {})
-      // TODO: support more than one filter
-      const value = x?.[0]?.[1]
-      // no filter
-      if (isNil(value)) return true
-      const key = x?.[0]?.[0]
-      const item = get(row, key)
-      return item === value
+      let valid = true
+      Object.entries(filter).forEach((item) => {
+        const [key, value] = item
+
+        if (value === undefined) return
+
+        const realValue = get(row, key)
+        if (Array.isArray(value)) {
+          valid = value.includes(realValue)
+          console.log(valid, value, realValue)
+        } else {
+          valid = realValue === value
+        }
+      })
+      return valid
     })
     return res
   }, [filter, rawDataIO.value])

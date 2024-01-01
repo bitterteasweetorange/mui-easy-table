@@ -1,5 +1,5 @@
 import type { Meta } from '@storybook/react'
-import { BODY_HEIGHT, EasyCell } from '../EasyCell'
+import { BODY_HEIGHT } from '../EasyCell'
 
 const meta = {
   title: 'component/EasyCell',
@@ -18,7 +18,10 @@ export const Defalut = () => {
 
 export const AlignRight = () => {
   return (
-    <EasyCell align="right" height={BODY_HEIGHT}>
+    <EasyCell
+      align="right"
+      height={BODY_HEIGHT}
+    >
       align right
     </EasyCell>
   )
@@ -26,7 +29,10 @@ export const AlignRight = () => {
 
 export const TopBorder = () => {
   return (
-    <EasyCell cellBorder="top" height={BODY_HEIGHT}>
+    <EasyCell
+      cellBorder="top"
+      height={BODY_HEIGHT}
+    >
       height is 52
     </EasyCell>
   )

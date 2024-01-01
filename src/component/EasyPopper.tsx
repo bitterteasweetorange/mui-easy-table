@@ -1,16 +1,18 @@
-import { ClickAwayListener, Grow, Paper, Popper } from '@mui/material'
+import { Box, ClickAwayListener, Grow, Popper } from '@mui/material'
 import React, { type ReactElement } from 'react'
-import { type UseIOReturn } from 'react-utils-ts'
 
+export type EasyPopperProps = {
+  children: ReactElement
+  anchorRef: React.RefObject<HTMLButtonElement>
+  open: boolean
+  onClose: () => void
+}
 export function EasyPopper({
   children,
   anchorRef,
-  openIO,
-}: {
-  children: ReactElement
-  anchorRef: React.RefObject<HTMLButtonElement>
-  openIO: UseIOReturn<boolean>
-}) {
+  onClose,
+  open,
+}: EasyPopperProps) {
   const handleClose = (event: Event | React.SyntheticEvent) => {
     if (
       anchorRef.current &&
@@ -19,7 +21,7 @@ export function EasyPopper({
       return
     }
 
-    openIO.onChange(false)
+    onClose()
   }
 
   return (
@@ -27,10 +29,11 @@ export function EasyPopper({
       sx={{
         zIndex: 1000,
       }}
-      open={openIO.value}
+      open={open}
       anchorEl={anchorRef.current}
       transition
       disablePortal
+      placement="bottom-start"
     >
       {({ TransitionProps, placement }) => (
         <Grow
@@ -40,11 +43,11 @@ export function EasyPopper({
               placement === 'bottom-start' ? 'left top' : 'left bottom',
           }}
         >
-          <Paper elevation={6}>
+          <Box>
             <ClickAwayListener onClickAway={handleClose}>
               {children}
             </ClickAwayListener>
-          </Paper>
+          </Box>
         </Grow>
       )}
     </Popper>

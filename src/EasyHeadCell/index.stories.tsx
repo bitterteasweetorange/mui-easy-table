@@ -19,7 +19,10 @@ export const Defalut = () => {
 
 export const AlignRight = () => {
   return (
-    <EasyHeadCell width={200} align="right">
+    <EasyHeadCell
+      width={200}
+      align="right"
+    >
       align right
     </EasyHeadCell>
   )
@@ -57,8 +60,43 @@ export const Sortable = () => {
 export const Resize = () => {
   const [width, setWidth] = useState<number>(100)
   return (
-    <EasyHeadCell width={width} onWidthChange={setWidth}>
+    <EasyHeadCell
+      width={width}
+      onWidthChange={setWidth}
+    >
       resize me
+    </EasyHeadCell>
+  )
+}
+
+export const Filter = () => {
+  const [filter, setFilter] = useState<('a' | 'b' | 'c')[]>([])
+  return (
+    <EasyHeadCell
+      width={200}
+      filterIO={{
+        value: filter,
+        onChange: setFilter,
+        filterSetting: {
+          type: 'multiSelect',
+          options: [
+            {
+              value: 'a',
+              label: 'a',
+            },
+            {
+              value: 'b',
+              label: 'b',
+            },
+            {
+              value: 'c',
+              label: 'c',
+            },
+          ],
+        },
+      }}
+    >
+      sort
     </EasyHeadCell>
   )
 }

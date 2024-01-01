@@ -23,11 +23,13 @@ export type EasyHeadCellProps = Omit<BoxProps, 'width'> & {
   sortIO?: UseIOReturn<EasyHeadCellSort>
   showSettingIcon?: boolean
   onHideColumn?: () => void
-  openIO: UseIOReturn<boolean>
+  openIO?: UseIOReturn<boolean>
   anchorRef?: React.RefObject<HTMLLIElement>
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
-} & EasyFilterProsp<any>
+  filterIO?: EasyFilterProsp<any>
+}
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type EasyHeadCellSort = 'asc' | 'desc' | 'none'
 
 export const HEAD_HEIGHT = 56
@@ -99,9 +101,7 @@ function Content(props: EasyHeadCellProps) {
     onHideColumn,
     openIO,
     anchorRef,
-    filterSetting,
-    onChange,
-    value,
+    filterIO,
     ...restProps
   } = props
   return (
@@ -171,16 +171,18 @@ function Content(props: EasyHeadCellProps) {
           )}
         </IconButton>
       )}
-      <EasyFilter
-        value={value}
-        onChange={onChange}
-        filterSetting={filterSetting}
-      />
+      {filterIO && (
+        <EasyFilter
+          value={filterIO.value}
+          onChange={filterIO.onChange}
+          filterSetting={filterIO.filterSetting}
+        />
+      )}
       {showSettingIcon && (
         <EasyTableHeadItemSetting
           onHideColumn={onHideColumn}
           onManageColumns={() => {
-            openIO.onChange?.((pre) => !pre)
+            openIO?.onChange?.((pre) => !pre)
           }}
           sx={{
             visibility: 'hidden',

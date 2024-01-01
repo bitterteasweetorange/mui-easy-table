@@ -126,23 +126,29 @@ export function EasyHead<
           const filterValue = get(filter, path) as any
           return (
             <EasyHeadCell
-              value={
-                filterSetting?.type === 'multiSelect'
-                  ? isNil(filterValue)
-                    ? []
-                    : filterValue
-                  : isNil(filterValue)
-                    ? []
-                    : [filterValue]
+              filterIO={
+                filterSetting
+                  ? {
+                      value:
+                        filterSetting?.type === 'multiSelect'
+                          ? isNil(filterValue)
+                            ? []
+                            : filterValue
+                          : isNil(filterValue)
+                          ? []
+                          : [filterValue],
+                      //eslint-disable-next-line
+                      onChange: (v: any) => {
+                        setFilter?.((pre) => ({
+                          ...pre,
+                          [path]:
+                            filterSetting?.type === 'multiSelect' ? v : v?.[0],
+                        }))
+                      },
+                      filterSetting,
+                    }
+                  : undefined
               }
-              //eslint-disable-next-line
-              onChange={(v: any) => {
-                setFilter?.((pre) => ({
-                  ...pre,
-                  [path]: filterSetting?.type === 'multiSelect' ? v : v?.[0],
-                }))
-              }}
-              filterSetting={filterSetting}
               openIO={openIO}
               anchorRef={colIndex === 0 ? anchorRef : undefined}
               key={path}
@@ -165,21 +171,21 @@ export function EasyHead<
               sortIO={
                 sortable
                   ? {
-                    value:
-                      sortIO?.value?.path === path
-                        ? sortIO.value?.direction
-                        : 'none',
-                    onChange: (nextSort) => {
-                      if (nextSort === 'none') {
-                        sortIO?.onChange(null)
-                      } else if (path !== 'actions') {
-                        sortIO?.onChange({
-                          path,
-                          direction: nextSort as 'asc' | 'desc',
-                        })
-                      }
-                    },
-                  }
+                      value:
+                        sortIO?.value?.path === path
+                          ? sortIO.value?.direction
+                          : 'none',
+                      onChange: (nextSort) => {
+                        if (nextSort === 'none') {
+                          sortIO?.onChange(null)
+                        } else if (path !== 'actions') {
+                          sortIO?.onChange({
+                            path,
+                            direction: nextSort as 'asc' | 'desc',
+                          })
+                        }
+                      },
+                    }
                   : undefined
               }
               showSettingIcon={setting}

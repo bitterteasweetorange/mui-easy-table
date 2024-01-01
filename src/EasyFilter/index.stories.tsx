@@ -18,13 +18,16 @@ export const Boolean = () => {
       onChange={onChange}
       filterSetting={{
         type: 'singleSelect',
-        options: [true, false],
-        renderOption: (val: boolean) =>
-          val ? (
-            <CheckOutlined color="success"></CheckOutlined>
-          ) : (
-            <ClearRounded color="error" />
-          ),
+        options: [
+          {
+            value: true,
+            label: <CheckOutlined color="success"></CheckOutlined>,
+          },
+          {
+            value: false,
+            label: <ClearRounded color="error" />,
+          },
+        ],
       }}
     ></EasyFilter>
   )
@@ -39,7 +42,20 @@ export const Select = () => {
       onChange={onChange}
       filterSetting={{
         type: 'multiSelect',
-        options: ['a', 'b', 'c'],
+        options: [
+          {
+            value: 'a',
+            label: 'a',
+          },
+          {
+            value: 'b',
+            label: 'b',
+          },
+          {
+            value: 'c',
+            label: 'c',
+          },
+        ],
       }}
     ></EasyFilter>
   )

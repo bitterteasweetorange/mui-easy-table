@@ -1,6 +1,6 @@
 import { Box, Checkbox } from '@mui/material'
 import { format } from 'date-fns'
-import { get } from 'lodash'
+import { get, isNil } from 'lodash'
 import { ReactNode, RefObject, useMemo, useRef } from 'react'
 import { FieldValues, Path } from 'react-hook-form'
 import { useIO } from 'react-utils-ts'
@@ -62,8 +62,7 @@ export type EasyColumnProps<
    * sum the column value
    * */
   sum?: boolean
-  // eslint-disable-next-line
-  filterSetting?: EasyFilterSetting<any>
+  filterSetting?: EasyFilterSetting<unknown>
 }
 
 export type EasyTableCellRender<T, Filter extends FieldValues | null = null> =
@@ -261,7 +260,7 @@ export function EasyTable<
                   >
                     {render
                       ? renderCell(index, value, render, row, useTableReturn)
-                      : value === null
+                      : isNil(value)
                       ? ''
                       : String(value)}
                   </EasyCell>
@@ -354,7 +353,7 @@ function renderCell<T, Filter extends FieldValues | null = null>(
     return render(val, row, index, useTableReturn)
   }
   if (render === 'money') {
-    return Number(val).toLocaleString()
+    return isNil(val) ? '' : Number(val).toLocaleString()
   }
   if (render === 'yyyy-MM-dd') {
     if (typeof val === 'number') {

@@ -37,7 +37,13 @@ export function EasyTableHeadItemSetting({
       >
         <MoreVertIcon fontSize="small" />
       </IconButton>
-      <EasyPopper anchorRef={anchorRefTrigger} openIO={openIO}>
+      <EasyPopper
+        anchorRef={anchorRefTrigger}
+        open={openIO.value}
+        onClose={() => {
+          openIO.onChange(false)
+        }}
+      >
         <MenuList>
           <MenuItem
             onClick={() => {
